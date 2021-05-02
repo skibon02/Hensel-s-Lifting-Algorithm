@@ -1,0 +1,13 @@
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\bin\Debug\netcoreapp3.1\EEafp.exe
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\bin\Debug\netcoreapp3.1\EEafp.deps.json
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\bin\Debug\netcoreapp3.1\EEafp.runtimeconfig.json
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\bin\Debug\netcoreapp3.1\EEafp.runtimeconfig.dev.json
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\bin\Debug\netcoreapp3.1\EEafp.dll
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\bin\Debug\netcoreapp3.1\EEafp.pdb
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\obj\Debug\netcoreapp3.1\EEafp.csprojAssemblyReference.cache
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\obj\Debug\netcoreapp3.1\EEafp.AssemblyInfoInputs.cache
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\obj\Debug\netcoreapp3.1\EEafp.AssemblyInfo.cs
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\obj\Debug\netcoreapp3.1\EEafp.csproj.CoreCompileInputs.cache
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\obj\Debug\netcoreapp3.1\EEafp.dll
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\obj\Debug\netcoreapp3.1\EEafp.pdb
+C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\obj\Debug\netcoreapp3.1\EEafp.genruntimeconfig.cache
