@@ -14,7 +14,23 @@ namespace EEafp
             Console.ForegroundColor = ConsoleColor.White;
             RingPolynomial.SetModContext(13);
 
-            var res = (new RingPolynomial { 1, 2 }* new RingPolynomial { 1, 1, 1 }).BerlekampFactor();
+            RingPolynomial for_factorization = new RingPolynomial { 1, 1, 1 } * new RingPolynomial { 1, 1, 1 } * new RingPolynomial { 1, 1, 1 } * new RingPolynomial { 1, 2, 1 };
+
+            RingPolynomial factorization = new RingPolynomial(4);
+            factorization[0] += 1;
+
+            var res = (for_factorization).BerlekampFactor();
+
+            for_factorization.Print();
+
+            for (int i=0; i < res.Count; i++)
+            {
+                factorization *= res[i];
+                res[i].Print('g');
+            }
+
+            factorization.Normalize();
+            factorization.Print();
 
             Console.Read();
         }

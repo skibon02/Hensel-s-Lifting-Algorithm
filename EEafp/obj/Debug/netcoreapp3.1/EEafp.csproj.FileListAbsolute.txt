@@ -11,3 +11,16 @@ C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma n
 C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\obj\Debug\netcoreapp3.1\EEafp.dll
 C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\obj\Debug\netcoreapp3.1\EEafp.pdb
 C:\Users\skiba\source\repos\Hensel's Lifting Algorithm (remastered v2.0 (gamma nyam nyam))\EEafp\obj\Debug\netcoreapp3.1\EEafp.genruntimeconfig.cache
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\bin\Debug\netcoreapp3.1\EEafp.exe
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\bin\Debug\netcoreapp3.1\EEafp.deps.json
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\bin\Debug\netcoreapp3.1\EEafp.runtimeconfig.json
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\bin\Debug\netcoreapp3.1\EEafp.runtimeconfig.dev.json
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\bin\Debug\netcoreapp3.1\EEafp.dll
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\bin\Debug\netcoreapp3.1\EEafp.pdb
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\obj\Debug\netcoreapp3.1\EEafp.csprojAssemblyReference.cache
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\obj\Debug\netcoreapp3.1\EEafp.AssemblyInfoInputs.cache
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\obj\Debug\netcoreapp3.1\EEafp.AssemblyInfo.cs
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\obj\Debug\netcoreapp3.1\EEafp.csproj.CoreCompileInputs.cache
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\obj\Debug\netcoreapp3.1\EEafp.dll
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\obj\Debug\netcoreapp3.1\EEafp.pdb
+D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\obj\Debug\netcoreapp3.1\EEafp.genruntimeconfig.cache

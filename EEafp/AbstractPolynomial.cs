@@ -60,6 +60,10 @@ namespace EEafp
         {
             coef = new List<T> {};
         }
+        public AbstractPolynomial(T[] p1)
+        {
+            coef = new List<T>(p1);
+        }
         public AbstractPolynomial(AbstractPolynomial<T, U> p1)
         {
             coef = new List<T>(p1.coef);
