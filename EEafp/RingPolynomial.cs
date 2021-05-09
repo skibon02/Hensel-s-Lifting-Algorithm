@@ -397,19 +397,33 @@ namespace EEafp
             // убираем кратные множители
             RingPolynomial gcdDerivative;
             GCD(this, this.Derivative(), out gcdDerivative);
-            if (gcdDerivative.degree > 0)
+            if (this == gcdDerivative)
             {
-                for (int i = 0; i < gcdDerivative.size; i++) gcdDerivative.coef[i] /= gcdDerivative.coef[gcdDerivative.size -1];
+                // тогда f(x) = g(x)^p, но тогда f(x) = g(x^p) - воспользуемся этим
+                RingPolynomial g = new RingPolynomial((gcdDerivative.size-1)/RingBint.mod + 1);
+                for (int i=0; i < g.size; i++)
+                {
+                    g[i] = gcdDerivative[i*RingBint.mod];
+                }
+                List<RingPolynomial> gFactorRes = g.BerlekampFactor();
+                for (int i=0; i< RingBint.mod; i++)
+                {
+                    for (int j = 0; j < gFactorRes.Count; j++)
+                    {
+                        factorRes.Add(gFactorRes[j]);
+                    }
+                }
+                return factorRes;
+            } else if (gcdDerivative.degree > 0)
+            {
+                for (int i = 0; i < gcdDerivative.size; i++) gcdDerivative.coef[i] /= gcdDerivative.coef[gcdDerivative.size - 1];
                 currPoly = (this / gcdDerivative).Quotient;
                 List<RingPolynomial> factorResForGcdDerivative = gcdDerivative.BerlekampFactor();
-                for (int i=0; i < factorResForGcdDerivative.Count; i++)
+                for (int i = 0; i < factorResForGcdDerivative.Count; i++)
                 {
                     factorRes.Add(factorResForGcdDerivative[i]);
                 }
-            } else if (gcdDerivative.IsNull())
-            {
-                throw new NotImplementedException("I have no idea what i need to do");
-            }
+            } 
             RingPolynomial poly = currPoly;
             RingBint[,] matrix = new RingBint[poly.degree-1, poly.degree];
             RingBint[][] decomposingPoly;
@@ -496,7 +510,7 @@ namespace EEafp
                 factorRes[0] *= originalPolyCoefficient;
             } else
             {
-                factorRes.Add(this);
+                factorRes.Add(poly);
             }
 
             return factorRes;

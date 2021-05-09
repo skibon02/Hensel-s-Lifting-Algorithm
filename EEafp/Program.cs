@@ -12,9 +12,11 @@ namespace EEafp
         static void Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.White;
-            RingPolynomial.SetModContext(13);
+            RingPolynomial.SetModContext(5);
 
-            RingPolynomial for_factorization = new RingPolynomial { 1, 1, 1 } * new RingPolynomial { 1, 1, 1 } * new RingPolynomial { 1, 1, 1 } * new RingPolynomial { 1, 2, 1 };
+            RingPolynomial one = new RingPolynomial { 1, 2, 1, 3 };
+            RingPolynomial two = new RingPolynomial { 1, 1, 1 };
+            RingPolynomial for_factorization = one* one* one* one* one* two* two* two* two* two;
 
             RingPolynomial factorization = new RingPolynomial(4);
             factorization[0] += 1;
@@ -31,6 +33,14 @@ namespace EEafp
 
             factorization.Normalize();
             factorization.Print();
+
+            RingPolynomial gcd_res;
+            Console.WriteLine("Проверим линейную независимость:");
+            for(int i = 0; i < res.Count - 1; i++)
+            {
+                RingPolynomial.GCD(res[i], res[i+1], out gcd_res);
+                gcd_res.Print();
+            }
 
             Console.Read();
         }
