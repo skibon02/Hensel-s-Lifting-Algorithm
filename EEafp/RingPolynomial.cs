@@ -86,6 +86,7 @@ namespace EEafp
         }
 
         public RingPolynomial() : base() { }
+        public RingPolynomial(RingBint[] ringBints) : base(ringBints) { }
         public RingPolynomial(RingPolynomial p1) : base(p1) { }
         public RingPolynomial(int size) : base(size) { }
 
@@ -386,10 +387,47 @@ namespace EEafp
 
         public List<RingPolynomial> BerlekampFactor()
         {
-            RingPolynomial poly = this;
-            RingBint[,] matrix = new RingBint[poly.degree-1, poly.degree];
+            // если многочлен меньше второй степени, то и раскладывать смысла нет
+            if (this.degree < 2) return new List<RingPolynomial> { this };
+            // запоминаем изначальный коэффициент многочлена
+            RingBint originalPolyCoefficient = this.coef[this.size - 1];
+            List<RingPolynomial> factorRes = new List<RingPolynomial>();
+            RingPolynomial currPoly = this;
 
-            for(int i = 1; i < poly.degree; i++)
+            // убираем кратные множители
+            RingPolynomial gcdDerivative;
+            GCD(this, this.Derivative(), out gcdDerivative);
+            if (this == gcdDerivative)
+            {
+                // тогда f(x) = g(x)^p, но тогда f(x) = g(x^p) - воспользуемся этим
+                RingPolynomial g = new RingPolynomial((gcdDerivative.size-1)/RingBint.mod + 1);
+                for (int i=0; i < g.size; i++)
+                {
+                    g[i] = gcdDerivative[i*RingBint.mod];
+                }
+                List<RingPolynomial> gFactorRes = g.BerlekampFactor();
+                for (int i=0; i< RingBint.mod; i++)
+                {
+                    for (int j = 0; j < gFactorRes.Count; j++)
+                    {
+                        factorRes.Add(gFactorRes[j]);
+                    }
+                }
+                return factorRes;
+            } else if (gcdDerivative.degree > 0)
+            {
+                for (int i = 0; i < gcdDerivative.size; i++) gcdDerivative.coef[i] /= gcdDerivative.coef[gcdDerivative.size - 1];
+                currPoly = (this / gcdDerivative).Quotient;
+                List<RingPolynomial> factorResForGcdDerivative = gcdDerivative.BerlekampFactor();
+                for (int i = 0; i < factorResForGcdDerivative.Count; i++)
+                {
+                    factorRes.Add(factorResForGcdDerivative[i]);
+                }
+            } 
+            RingPolynomial poly = currPoly;
+            RingBint[,] matrix = new RingBint[poly.degree-1, poly.degree];
+            RingBint[][] decomposingPoly;
+            for (int i = 1; i < poly.degree; i++)
             {
                 RingPolynomial edinica = new RingPolynomial(i * RingBint.mod+1);
                 edinica[i * RingBint.mod] = 1;
@@ -410,11 +448,72 @@ namespace EEafp
                 }
             }
             RingMatrix.PrintMatrix(newmatrix);
-            RingMatrix.GaussSumplify(newmatrix);
+            decomposingPoly = RingMatrix.GaussSumplifyForBerclecampFactor(newmatrix);
             RingMatrix.PrintMatrix(newmatrix);
+            if (decomposingPoly.Length > 0)
+            {
+                RingMatrix.PrintAnswer(decomposingPoly);
 
+                // найдем разложение c использованием первого вектора
+                RingPolynomial oneDecomposePoly = new RingPolynomial(decomposingPoly[0]);
+                RingPolynomial gcd_result = new RingPolynomial();
+                for (int j = 0; j < RingBint.mod; j++)
+                {
+                    oneDecomposePoly[0] += j;
+                    GCD(this, oneDecomposePoly, out gcd_result);
+                    for (int k = 0; k < gcd_result.size; k++)  // gcd с точностью до постоянного множителя избавляемся от него
+                        gcd_result.coef[k] /= gcd_result.coef[gcd_result.size - 1];
+                    if (gcd_result.degree > 0)
+                    {
+                        factorRes.Add(gcd_result);
+                    }
+                    oneDecomposePoly[0] -= j;
+                }
+                // Если нашли не все векторы разложения продолжаем поиск
+                if (factorRes.Count < decomposingPoly.Length + 1)
+                {
+                    bool all_find = false;
+                    for (int p=0; p < factorRes.Count && !all_find; p++)
+                    {
+                        RingPolynomial polyForFactor = new RingPolynomial(factorRes[p]);
+                        for (int l = 1; l < decomposingPoly.Length && !all_find; l++)
+                        {
+                            oneDecomposePoly = new RingPolynomial(decomposingPoly[l]);
+                            for (int i = 1; i < decomposingPoly.Length && !all_find; i++)
+                            {
+                                oneDecomposePoly = new RingPolynomial(decomposingPoly[i]);
+                                for (int j = 0; j < RingBint.mod && !all_find; j++)
+                                {
+                                    oneDecomposePoly[0] += j;
+                                    GCD(polyForFactor, oneDecomposePoly, out gcd_result);
+                                    for (int k = 0; k < gcd_result.size; k++)  // gcd с точностью до постоянного множителя избавляемся от него
+                                        gcd_result.coef[k] /= gcd_result.coef[gcd_result.size - 1];
+                                    if (gcd_result.degree > 0 && factorRes.All(x => x != gcd_result))
+                                    {
+                                        if (factorRes[p] == polyForFactor)
+                                        {
+                                            factorRes.RemoveAt(p);
+                                        }
+                                        factorRes.Add(gcd_result);
+                                        if (factorRes.Count == decomposingPoly.Length + 1)
+                                        {
+                                            all_find = true;
+                                            break;
+                                        }
+                                    }
+                                    oneDecomposePoly[0] -= j;
+                                }
+                            }
+                        }
+                    }
+                }
+                factorRes[0] *= originalPolyCoefficient;
+            } else
+            {
+                factorRes.Add(poly);
+            }
 
-            return new List<RingPolynomial>();
+            return factorRes;
         }
 
     }
