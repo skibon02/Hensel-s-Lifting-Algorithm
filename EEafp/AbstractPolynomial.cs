@@ -60,7 +60,7 @@ namespace EEafp
         {
             coef = new List<T> {};
         }
-        public AbstractPolynomial(T[] p1)
+        public AbstractPolynomial(IEnumerable<T> p1)
         {
             coef = new List<T>(p1);
         }
@@ -117,6 +117,7 @@ namespace EEafp
         }
         public void Print(char letter = 'f', char variable = 'x')
         {
+            Console.Write(Program.GetTab);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Write(letter + "(" + variable + ") = ");
             for (int i = degree; i > 0; i--)
@@ -165,7 +166,7 @@ namespace EEafp
 
             for (int i = 0; i <= len; i++)
             {
-                if (!fir.coef[i].Equals( sec.coef[i]))
+                if (!fir[i].Equals( sec[i]))
                     return false;
             }
 

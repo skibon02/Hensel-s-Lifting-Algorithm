@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "tZuB/RRZuO6Itp1Xa56WmBybcIKYG+k6+fivqw9mrYBM3ozDoVPbM4V5g4Lw4CQ4A6bWzRMQePbHo+agFCwoug==",
+  "dgSpecHash": "qTnRFxQ8/6fv6ACbUhQntuprVicWtzwyFBN/WAj6gcGpym/SRPYUepYKxoOhLXeWPkUL4abUHibwB/SBdD0Rwg==",
   "success": true,
-  "projectFilePath": "D:\\Program Files (x86)\\VS_proj\\Hensel-s-Lifting-Algorithm-master\\TeStEr\\TeStEr.csproj",
+  "projectFilePath": "E:\\programming\\С#\\Hensel's lifting algorithm\\TeStEr\\TeStEr.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

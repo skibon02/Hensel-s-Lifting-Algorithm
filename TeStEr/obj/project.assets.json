@@ -27,19 +27,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Vitas\\.nuget\\packages\\": {}
+    "E:\\programming\\С#\\packages\\.nuget": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Program Files (x86)\\VS_proj\\Hensel-s-Lifting-Algorithm-master\\TeStEr\\TeStEr.csproj",
+      "projectUniqueName": "E:\\programming\\С#\\Hensel's lifting algorithm\\TeStEr\\TeStEr.csproj",
       "projectName": "TeStEr",
-      "projectPath": "D:\\Program Files (x86)\\VS_proj\\Hensel-s-Lifting-Algorithm-master\\TeStEr\\TeStEr.csproj",
-      "packagesPath": "C:\\Users\\Vitas\\.nuget\\packages\\",
-      "outputPath": "D:\\Program Files (x86)\\VS_proj\\Hensel-s-Lifting-Algorithm-master\\TeStEr\\obj\\",
+      "projectPath": "E:\\programming\\С#\\Hensel's lifting algorithm\\TeStEr\\TeStEr.csproj",
+      "packagesPath": "E:\\programming\\С#\\packages\\.nuget",
+      "outputPath": "E:\\programming\\С#\\Hensel's lifting algorithm\\TeStEr\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Vitas\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\skiba\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -53,8 +57,8 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "D:\\Program Files (x86)\\VS_proj\\Hensel-s-Lifting-Algorithm-master\\EEafp\\EEafp.csproj": {
-              "projectPath": "D:\\Program Files (x86)\\VS_proj\\Hensel-s-Lifting-Algorithm-master\\EEafp\\EEafp.csproj"
+            "E:\\programming\\С#\\Hensel's lifting algorithm\\EEafp\\EEafp.csproj": {
+              "projectPath": "E:\\programming\\С#\\Hensel's lifting algorithm\\EEafp\\EEafp.csproj"
             }
           }
         }
@@ -83,7 +87,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.103\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.202\\RuntimeIdentifierGraph.json"
       }
     }
   }

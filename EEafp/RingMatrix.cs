@@ -10,7 +10,7 @@ namespace EEafp
         {
             for (int i = 0; i < matrix.GetLength(0); i++)
             {
-
+                Console.Write(Program.GetTab);
                 for (int j = 0; j < matrix.GetLength(1); j++)
                 {
                     Console.Write(matrix[i, j].val + " ");
@@ -25,6 +25,7 @@ namespace EEafp
         {
             for (int i = 0; i < answer.Length; i++)
             {
+                Console.Write(Program.GetTab);
                 for (int j = 0; j < answer[i].Length; j++)
                 {
                     Console.Write(answer[i][j] + " ");
@@ -36,10 +37,11 @@ namespace EEafp
 
 public static RingBint[][] GaussSumplifyForBerclecampFactor(RingBint[,] inp)
         {
-
-            for (int i = 0; i < inp.GetLength(0); i++)
+            Program.Log("Начало упрощения Гаусса:");
+            PrintMatrix(inp);
+            for (int i = 0; i < Math.Min(inp.GetLength(0), inp.GetLength(1)); i++) // проход по диагонали
             {
-                for (int j = i + 1; j < inp.GetLength(0); j++)
+                for (int j = i + 1; j < inp.GetLength(0); j++) // проход по столбцу от i
                 {
                     // находим ненулевой элемент в столбце
                     for (int iNot0 = i; iNot0 < inp.GetLength(0); iNot0++)
@@ -65,8 +67,16 @@ public static RingBint[][] GaussSumplifyForBerclecampFactor(RingBint[,] inp)
                             inp[j, k] -= inp[i, k] * coef;
                         }
                     }
+                    else
+                    {
+                        Program.Log("Нулевой столбец *-*");
+                    }
                 }
             }
+
+
+            Program.Log("Конец упрощения Гаусса:");
+            PrintMatrix(inp);
 
             int spareArguments = 0;
             for(int i = inp.GetLength(0) - 1; i >= 0; i--)
@@ -112,6 +122,12 @@ public static RingBint[][] GaussSumplifyForBerclecampFactor(RingBint[,] inp)
             {
                 for (int i = inp.GetLength(0) - spareArguments - 1; i >= 0; i--)
                 {
+                    if(inp[i,i] == 0)
+                    {
+                        Program.Log("моя остановочка");
+
+                        continue;
+                    }
                     for (int j = i + 1; j < inp.GetLength(1); j++)
                     {
                         answer[answerNum][i + 1] -= answer[answerNum][j + 1] * inp[i, j];
@@ -119,6 +135,8 @@ public static RingBint[][] GaussSumplifyForBerclecampFactor(RingBint[,] inp)
                     answer[answerNum][i + 1] /= inp[i, i];
                 }
             }
+            Program.Log("Независимый базис системы:");
+            PrintAnswer(answer);
             return answer; 
         }
     }

@@ -24,3 +24,16 @@ D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\obj\Debug
 D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\obj\Debug\netcoreapp3.1\EEafp.dll
 D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\obj\Debug\netcoreapp3.1\EEafp.pdb
 D:\Program Files (x86)\VS_proj\Hensel-s-Lifting-Algorithm-master\EEafp\obj\Debug\netcoreapp3.1\EEafp.genruntimeconfig.cache
+E:\programming\С#\Hensel's lifting algorithm\EEafp\bin\Debug\netcoreapp3.1\EEafp.exe
+E:\programming\С#\Hensel's lifting algorithm\EEafp\bin\Debug\netcoreapp3.1\EEafp.deps.json
+E:\programming\С#\Hensel's lifting algorithm\EEafp\bin\Debug\netcoreapp3.1\EEafp.runtimeconfig.json
+E:\programming\С#\Hensel's lifting algorithm\EEafp\bin\Debug\netcoreapp3.1\EEafp.runtimeconfig.dev.json
+E:\programming\С#\Hensel's lifting algorithm\EEafp\bin\Debug\netcoreapp3.1\EEafp.dll
+E:\programming\С#\Hensel's lifting algorithm\EEafp\bin\Debug\netcoreapp3.1\EEafp.pdb
+E:\programming\С#\Hensel's lifting algorithm\EEafp\obj\Debug\netcoreapp3.1\EEafp.AssemblyInfoInputs.cache
+E:\programming\С#\Hensel's lifting algorithm\EEafp\obj\Debug\netcoreapp3.1\EEafp.AssemblyInfo.cs
+E:\programming\С#\Hensel's lifting algorithm\EEafp\obj\Debug\netcoreapp3.1\EEafp.csproj.CoreCompileInputs.cache
+E:\programming\С#\Hensel's lifting algorithm\EEafp\obj\Debug\netcoreapp3.1\EEafp.dll
+E:\programming\С#\Hensel's lifting algorithm\EEafp\obj\Debug\netcoreapp3.1\EEafp.pdb
+E:\programming\С#\Hensel's lifting algorithm\EEafp\obj\Debug\netcoreapp3.1\EEafp.genruntimeconfig.cache
+E:\programming\С#\Hensel's lifting algorithm\EEafp\obj\Debug\netcoreapp3.1\EEafp.csprojAssemblyReference.cache
