@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EEafp
 {
-    class Program
+    class TesterProgram
     {
         public delegate bool tester();
 
@@ -19,11 +20,11 @@ namespace EEafp
 
         }
 
-        static RingPolynomial PrepareInputBerlekamp(out List<RingPolynomial> dividers)
+        static RingPolynomial PrepareInputBerlekamp(out List<RingPolynomial> dividers, int minPolycount = 3, int maxPolycount = 3, int minPower = 2, int maxPower = 2, bool withzero = true)
         {
             dividers = new List<RingPolynomial>();
             Random rnd = new Random();
-            int polycount = rnd.Next(4, 6);
+            int polycount = rnd.Next(minPolycount, maxPolycount);
             RingPolynomial for_factorization = new RingPolynomial { 1 };
 
             for (int i = 0; i < polycount; i++)
@@ -32,8 +33,8 @@ namespace EEafp
                 do
                 {
                     anotherOne = new RingPolynomial();
-                    for (int j = 0; j < rnd.Next(3, 5); j++)
-                        anotherOne.Add(rnd.Next(0, 4));
+                    for (int j = 0; j < rnd.Next(minPower, maxPower); j++)
+                        anotherOne.Add(rnd.Next(true ? 0 : 1, RingBint.mod-1));
                 } while (anotherOne.IsNull());
 
                 for_factorization *= anotherOne;
@@ -42,42 +43,67 @@ namespace EEafp
 
             return for_factorization;
         }
+        enum BerlekampMode
+        {
+            Easy,
+            PostMedium,
+            Medium,
+            Hard,
+            Ultra
+        }
+        static RingPolynomial PrepareInputBerlekamp(out List<RingPolynomial> dividers, BerlekampMode berlekampMode)
+        {
+            dividers = new List<RingPolynomial>();
+            switch (berlekampMode)
+            {
+                case BerlekampMode.Easy:
+                    return PrepareInputBerlekamp(out dividers, 3,3,2,2,false );
+                case BerlekampMode.PostMedium:
+                    return PrepareInputBerlekamp(out dividers, 3, 3, 3, 3, true);
+                case BerlekampMode.Medium:
+                    return PrepareInputBerlekamp(out dividers, 4, 5, 3, 5, true);
+                case BerlekampMode.Hard:
+                    return PrepareInputBerlekamp(out dividers, 10, 10, 2, 7, true);
+                case BerlekampMode.Ultra:
+                    return PrepareInputBerlekamp(out dividers, 10, 30, 2, 15, true);
+            }
+            return new RingPolynomial();
+        }
         static bool TestBerlekampFactor(RingPolynomial for_factorization)
         {
 
-            RingPolynomial.SetModContext(5);
-
             
             RingPolynomial factorization = new RingPolynomial { 1 };
-
             var res = for_factorization.BerlekampFactor();
+            res.ForEach((val) => factorization *= val);
+            Program.Log("Произведение делителей:");
+            factorization.Print();
 
-            Console.WriteLine("Результат разложения:");
-            for (int i = 0; i < res.Count; i++)
-            {
-                factorization *= res[i];
-                res[i].Print('g');
-            }
+            Program.LogEnabled = false;
+            bool allAreIrreducible = res.All((val) => val.BerlekampFactor().Count == 1);
+            Program.LogEnabled = true;
 
-            return (factorization - for_factorization).IsNull();
+            return (factorization - for_factorization).IsNull() && allAreIrreducible;
         }
 
         static void Main(string[] args)
         {
             //TestSolvingEquation(new Polynomial { -1, 0, 0, 2, 1 }, new Polynomial { 1, 0, 0, 1 }, new Polynomial { 1, 0, 1 });
-            RingPolynomial.SetModContext(5);
+            RingPolynomial.SetModContext(17);
 
-            //List<RingPolynomial> dividers;
+            List<RingPolynomial> dividers;
+            TestBerlekampFactor(new RingPolynomial { 1, 1, 1 });
+            Program.LogEnabled = true;
 
-            //RingPolynomial test;
-            //do
-            //{
-            //    test = PrepareInputBerlekamp(out dividers);
+            RingPolynomial test;
+            do
+            { 
+                test = PrepareInputBerlekamp(out dividers, BerlekampMode.Ultra);
 
-            //} while (TestBerlekampFactor(test));
+            } while (TestBerlekampFactor(test));
 
-            //Console.WriteLine("Ты накосячил");
-            TestBerlekampFactor(new RingPolynomial { 1, 1 } * new RingPolynomial { 1, 1 } * new RingPolynomial { 1, 2 } * new RingPolynomial { 1, 2 }  * new RingPolynomial { 1, 2 } * new RingPolynomial { 1, 1, 1 } * new RingPolynomial { 1, 1, 1 });
+            Console.WriteLine("Test wrong!");
+            TestBerlekampFactor(test);
 
             Console.Read();
         }

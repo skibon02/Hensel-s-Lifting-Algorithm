@@ -389,26 +389,28 @@ namespace EEafp
         public List<RingPolynomial> BerlekampFactor()
         {
             Program.recDepth++;
-            Program.Log("Поиск разложения для многочлена:");
-            this.Print('f');
-            // если многочлен меньше второй степени, то и раскладывать смысла нет
-            if (this.degree < 2)
-            {
-                Program.recDepth--;
-                return new List<RingPolynomial> { this };
-            }
-            // запоминаем изначальный коэффициент многочлена
-            RingBint originalPolyCoefficient = this.coef[this.size - 1];
-            List<RingPolynomial> factorRes = new List<RingPolynomial>(); // result
-            int multipleRootsCount = 0;
-            RingPolynomial currPoly = this;
+            RingPolynomial poly = this;
 
-            // убираем кратные множители
+            if (this.degree < 2) // если многочлен меньше второй степени, то и раскладывать смысла нет
+            {
+                Program.Log("Разложение для " + poly + " не требуется.");
+                //end
+                Program.recDepth--;
+                return new List<RingPolynomial> { poly };
+            }
+
+            Program.Log("Поиск разложения для многочлена:");
+            if (Program.LogEnabled) poly.Print('a');
+            List<RingPolynomial> factorRes = new List<RingPolynomial>(); // результат - список делителей
+
+
+            // 1) убираем кратные множители
             RingPolynomial gcdDerivative;
             GCD(this, this.Derivative(), out gcdDerivative);
             if (this == gcdDerivative)
             {
-                // тогда f(x) = g(x)^p, но тогда f(x) = g(x^p) - воспользуемся этим
+                // 1.1) особый случай, когда производная равна 0. Тогда f(x) = g(x)^p, но тогда f(x) = g(x^p) - воспользуемся этим
+                Program.Log("Обнаружена общая степень кратная модулю поля (" + RingBint.mod + ")");
                 RingPolynomial g = new RingPolynomial((gcdDerivative.size-1)/RingBint.mod + 1);
                 for (int i=0; i < g.size; i++)
                 {
@@ -417,127 +419,138 @@ namespace EEafp
                 List<RingPolynomial> gFactorRes = g.BerlekampFactor();
                 for (int i=0; i< RingBint.mod; i++)
                 {
-                    for (int j = 0; j < gFactorRes.Count; j++)
-                    {
-                        factorRes.Add(gFactorRes[j]);
-                    }
+                    factorRes.AddRange(gFactorRes);
                 }
+                //end
+                Program.Log("Результат разложения:");
+                if (Program.LogEnabled)
+                    for (int i = 0; i < factorRes.Count; i++)
+                    {
+                        factorRes[i].Print('g');
+                    }
                 Program.recDepth--;
                 return factorRes;
             } else if (gcdDerivative.degree > 0)
             {
-                //обнаружены кратные множители и производная не равна 0
-                Program.Log("Обнаружены кратные множители:");
-                for (int i = 0; i < gcdDerivative.size; i++) gcdDerivative[i] /= gcdDerivative[gcdDerivative.size - 1];
-                currPoly = (this / gcdDerivative).Quotient;
-                gcdDerivative.Print('g');
-                List<RingPolynomial> factorResForGcdDerivative = gcdDerivative.BerlekampFactor();
-
-                multipleRootsCount += factorResForGcdDerivative.Count;
-                for (int i = 0; i < factorResForGcdDerivative.Count; i++)
-                {
-                    factorRes.Add(factorResForGcdDerivative[i]);
-                    factorResForGcdDerivative[i].Print();
-                }
-                Program.Log();
+                //1.2) Обнаружены кратные множители. Разделение исходного многочлена a(x) на b(x) * c(x)
+                //     - c(x) гарантированно не содержит кратных корней
+                //     - b(x) - это оставшаяся часть обрабатывается рекурсивно
+                gcdDerivative *= (new RingBint(1) / gcdDerivative[gcdDerivative.degree]);
+                Program.Log("Обнаружены кратные множители. Рекурсивный вызов для b(x) = " + gcdDerivative);
+                poly = (poly / gcdDerivative).Quotient; //текущий многочлен теперь c(x)
+                List<RingPolynomial> factorResForGcdDerivative = gcdDerivative.BerlekampFactor(); //рекурсивный вызов для b(x)
+                factorRes.AddRange(factorResForGcdDerivative);
             } 
-            RingPolynomial poly = currPoly;
-            RingBint[,] matrix = new RingBint[poly.degree-1, poly.degree];
+            else
+            {
+                Program.Log("Кратные множители отсутствуют.");
+            }
+
+            // 2) Обработка c(x)
+            Program.Log("Разложение многочлена без кратных корней c(x) = " + poly);
+            if (poly.degree < 2) // если многочлен меньше второй степени, то и раскладывать смысла нет
+            {
+                Program.Log("Разложение для " + poly + " не требуется.");
+                factorRes.Add(poly);
+                //end
+                Program.recDepth--;
+                return factorRes;
+            }
+            // 2.1) Построение матрицы и нахождение ФСР ОСЛУ
+            RingBint[,] matrix = new RingBint[poly.degree, poly.degree-1]; // транспонированное заполнение матрицы
             RingBint[][] decomposingPoly;
             for (int i = 1; i < poly.degree; i++)
             {
-                RingPolynomial edinica = new RingPolynomial(i * RingBint.mod+1);
-                edinica[i * RingBint.mod] = 1;
+                RingPolynomial edinica = new RingPolynomial()
+                {
+                    [i * RingBint.mod] = 1
+                };
                 var reminder = (edinica / poly).Reminder;
                 for(int j = 0; j < poly.degree; j++)
                 {
-                    matrix[i-1, j] = reminder[j]; 
+                    matrix[j, i - 1] = reminder[j]; 
                 }
-                matrix[i-1, i ] -= 1;
+                matrix[i, i-1 ] -= 1;
             }
-            RingBint[,] newmatrix = new RingBint[poly.degree, poly.degree - 1];
-            for(int i = 0; i < poly.degree; i++) // транспонирование матрицы
-            {
-                for(int j = 0; j < poly.degree-1; j++)
-                {
-                    newmatrix[i, j] = matrix[j, i];
-                }
-            }
-            decomposingPoly = RingMatrix.GaussSumplifyForBerclecampFactor(newmatrix);
+            decomposingPoly = RingMatrix.SolveHSLE(matrix);
+            
+            // 2.2) рекурсивное разложение с помощью разлазающих многочленов (в статической переменной)
             if (decomposingPoly.Length > 0)
             {
-                // найдем разложение c использованием первого вектора
-                for (int p = 0; p < decomposingPoly.Length; p++)
-                {
-                    RingPolynomial oneDecomposePoly = new RingPolynomial(decomposingPoly[p]);
-                    Program.Log("Поиск возможных множителей для разлагающего многочлена " + oneDecomposePoly + ":");
-                    RingPolynomial multiplication = new RingPolynomial { 1 };
-                    RingPolynomial gcd_result = new RingPolynomial();
-                    for (int j = 0; j < RingBint.mod; j++)
-                    {
-                        GCD(currPoly, oneDecomposePoly, out gcd_result);
-                        for (int k = 0; k < gcd_result.size; k++)  // gcd с точностью до постоянного множителя избавляемся от него
-                            gcd_result.coef[k] /= gcd_result.coef[gcd_result.size - 1];
-                        if (gcd_result.degree > 0)
-                        {
-                            Program.Log("Найден множитель:");
-                            gcd_result.Print('g');
-                            multiplication *= gcd_result;
-                            var divres = gcd_result / gcd_result.Derivative();
-                            Program.Log("Чекаем d:");
-                            Program.Log("Остаток: " + divres.Reminder);
-                            Program.Log("Целая часть: " + divres.Quotient);
-                            //var divisorDivisors = gcd_result.BerlekampFactor();
-                            //factorRes.AddRange(divisorDivisors);
-                        }
-                        oneDecomposePoly[0] += 1;
-                    }
-                    Program.Log("Тестируем произведение: ");
-                    multiplication.Print('z');
-                }
-                // Если нашли не все векторы разложения продолжаем поиск
-                //if (factorRes.Count < decomposingPoly.Length + 1 + multipleRootsCount)
-                //{
+                Program.recDepth--;
+                _BerlekampDecomposingPoly = decomposingPoly;
+                RingBint leadingCoeff = poly[poly.degree];
+                poly *= new RingBint(1) / leadingCoeff;
+                var decomposeResult = BerlekampDecompose(poly, 0);
+                Program.recDepth++;
 
-                //    bool all_find = false;
-                //    for (int p=multipleRootsCount; p < factorRes.Count && !all_find; p++)
-                //    {
-                //        RingPolynomial polyForFactor = new RingPolynomial(factorRes[p]);
-                //        for (int i = 1; i < decomposingPoly.Length && !all_find; i++)
-                //        {
-                //            oneDecomposePoly = new RingPolynomial(decomposingPoly[i]);
-                //            for (int j = 0; j < RingBint.mod && !all_find; j++)
-                //            {
-                //                oneDecomposePoly[0] += j;
-                //                GCD(polyForFactor, oneDecomposePoly, out gcd_result);
-                //                for (int k = 0; k < gcd_result.size; k++)  // gcd с точностью до постоянного множителя избавляемся от него
-                //                    gcd_result.coef[k] /= gcd_result.coef[gcd_result.size - 1];
-                //                if (gcd_result.degree > 0)
-                //                {
-                //                    if (gcd_result != polyForFactor)
-                //                    {
-                //                        factorRes.Add(gcd_result);
-                //                    }
-                //                    if (factorRes.Count == decomposingPoly.Length + 1 + multipleRootsCount)
-                //                    {
-                //                        all_find = true;
-                //                        break;
-                //                    }
-                //                }
-                //                oneDecomposePoly[0] -= j;
-                //            }
-                //        }
-                //    }
-                //}
-
-                //factorRes[0] *= originalPolyCoefficient;
-            } else
-            {
-                factorRes.Add(poly);
+                decomposeResult[0] *= leadingCoeff;
+                factorRes.AddRange(decomposeResult);
             }
+            else
+            {
+                //end
+                Program.Log("Разложение для " + poly + " не требуется. Многочлен неприводимый.");
+                Program.recDepth--;
+                factorRes.Add(poly);
+                return factorRes;
+            }
+
+            //end
+            Program.Log("Результат разложения:");
+            if(Program.LogEnabled)
+                for (int i = 0; i < factorRes.Count; i++)
+                {
+                    factorRes[i].Print('g');
+                }
 
             Program.recDepth--;
             return factorRes;
+        }
+
+        static RingBint[][] _BerlekampDecomposingPoly;
+        static List<RingPolynomial> BerlekampDecompose(RingPolynomial curPoly, int depth)
+        {
+            if (depth >= _BerlekampDecomposingPoly.Length)
+                return new List<RingPolynomial> { curPoly };  
+
+            Program.recDepth++;
+            List<RingPolynomial> tempres = new List<RingPolynomial>();
+            List<RingPolynomial> res = new List<RingPolynomial>();
+
+            Program.Log("Поиск возможных множителей с помощью разлагающих многочленов");
+            for (int i = depth; i < _BerlekampDecomposingPoly.Length; i++)
+            {
+                RingPolynomial oneDecomposePoly = new RingPolynomial(_BerlekampDecomposingPoly[i]);
+                for (int j = 0; j < RingBint.mod; j++)
+                {
+                    RingPolynomial gcd_result;
+                    GCD(curPoly, oneDecomposePoly, out gcd_result);
+                    gcd_result *= (new RingBint(1) / gcd_result[gcd_result.degree]);
+                    if (gcd_result.degree > 0)
+                    {
+                        tempres.Add(gcd_result);
+                    }
+                    oneDecomposePoly[0] += 1;
+                }
+                if(tempres.Count > 1)
+                {
+                    Program.Log("Найден множитель:");
+                    for (int k = 0; k < tempres.Count; k++)
+                    {
+                        tempres[k].Print('g');
+                        res.AddRange(BerlekampDecompose(tempres[k], depth));
+                    }
+                    Program.recDepth--;
+                    return res;
+                }
+                tempres.Clear();
+            }
+
+            Program.Log("Многочлен неприводимый. выход.");
+
+            Program.recDepth--;
+            return new List<RingPolynomial> { curPoly };
         }
 
     }

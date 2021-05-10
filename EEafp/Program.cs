@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EEafp
 {
-    class Program
+    public class Program
     {
         public static bool LogEnabled = true;
         static void Main(string[] args)
