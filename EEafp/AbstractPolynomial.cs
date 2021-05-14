@@ -209,6 +209,12 @@ namespace EEafp
         }
         protected abstract DividionResult PolyDiv(U p2);
 
+        public static U operator /(AbstractPolynomial<T, U> fir, T nyam)
+        {
+            return fir.PolyDiv(nyam);
+        }
+        protected abstract U PolyDiv(T nyam);
+
         public static bool operator ==(AbstractPolynomial<T, U> fir, U sec)
         {
             return fir.Equals(sec);

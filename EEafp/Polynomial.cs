@@ -152,6 +152,17 @@ namespace EEafp
             r.Normalize();
             return new DividionResult(q, r);
         }
+
+        protected override Polynomial PolyDiv(decimal nyam)
+        {
+            Polynomial p1 = this;
+            Polynomial res = new Polynomial(p1);
+            for (int i=0; i < p1.size; i++)
+            {
+                res[i] *= nyam;
+            }
+            return res;
+        }
         protected override GCDResult PolyGCD(Polynomial g, out Polynomial gcd)
         {
             Polynomial f = this;
