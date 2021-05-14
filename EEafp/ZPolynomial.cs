@@ -175,7 +175,7 @@ namespace EEafp
             ZPolynomial res = new ZPolynomial(p1);
             for (int i = 0; i < p1.size; i++)
             {
-                res[i] *= nyam;
+                res[i] /= nyam;
             }
             return res;
         }

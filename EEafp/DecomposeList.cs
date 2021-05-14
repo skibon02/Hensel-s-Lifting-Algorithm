@@ -10,8 +10,8 @@ namespace EEafp
     {
         public List<RingPolynomial> UniqDecomposeElems;
         List<RingPolynomial> AllDecomposeElems;
-
         List<int> nyamDecomposeElem;
+        public int polyCoefficient = 1;
 
         public RingDecomposeList() 
         {
@@ -28,11 +28,16 @@ namespace EEafp
 
             foreach (RingPolynomial poly in RingPolyEnum)
             {
-                AllDecomposeElems.Add(poly);
+                RingPolynomial TmpPoly = poly;
+                if (TmpPoly[TmpPoly.size - 1] != 1) {
+                    polyCoefficient *= TmpPoly[TmpPoly.size - 1];
+                    TmpPoly /= poly[poly.size - 1];
+                }
+                AllDecomposeElems.Add(TmpPoly);
                 bool isDuplicate = false;
                 for (int i = 0; i < UniqDecomposeElems.Count; i++)
                 {
-                    if (poly == UniqDecomposeElems[i])
+                    if (TmpPoly == UniqDecomposeElems[i])
                     {
                         nyamDecomposeElem[i]++;
                         isDuplicate = true;
@@ -40,7 +45,7 @@ namespace EEafp
                 }
                 if (!isDuplicate)
                 {
-                    UniqDecomposeElems.Add(poly);
+                    UniqDecomposeElems.Add(TmpPoly);
                     nyamDecomposeElem.Add(1);
                 }
             }
@@ -68,11 +73,17 @@ namespace EEafp
         {
             foreach (RingPolynomial poly in RingPolyEnum)
             {
-                AllDecomposeElems.Add(poly);
+                RingPolynomial TmpPoly = poly;
+                if (TmpPoly[TmpPoly.size - 1] != 1)
+                {
+                    polyCoefficient *= TmpPoly[TmpPoly.size - 1];
+                    TmpPoly /= poly[poly.size - 1];
+                }
+                AllDecomposeElems.Add(TmpPoly);
                 bool isDuplicate = false;
                 for (int i = 0; i < UniqDecomposeElems.Count; i++)
                 {
-                    if (poly == UniqDecomposeElems[i])
+                    if (TmpPoly == UniqDecomposeElems[i])
                     {
                         nyamDecomposeElem[i]++;
                         isDuplicate = true;
@@ -80,7 +91,7 @@ namespace EEafp
                 }
                 if (!isDuplicate)
                 {
-                    UniqDecomposeElems.Add(poly);
+                    UniqDecomposeElems.Add(TmpPoly);
                     nyamDecomposeElem.Add(1);
                 }
             }
@@ -94,7 +105,11 @@ namespace EEafp
             }
             set
             {
-                AllDecomposeElems[i] = value;
+                if (value[value.size - 1] != 1)
+                {
+                    polyCoefficient *= value[value.size - 1];
+                    AllDecomposeElems[i] = value / value[value.size - 1];
+                }
             }
         }
 
