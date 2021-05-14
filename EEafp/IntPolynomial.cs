@@ -17,8 +17,8 @@ namespace EEafp
         {
             for (int i = 0; i < p1.size; i++)
             {
-                BigInteger curElem = p1[i].val;
-                Add(p1[i].val);
+                BigInteger curElem = p1[i];
+                this.Add(curElem);
             }
         }
         public IntPolynomial(int size) : base(size) { }
@@ -28,7 +28,7 @@ namespace EEafp
         {
             int i;
             for (i = degree; i >= 0 && this[i] == 0; i--) ;
-            if (i == -1) //-1 степень существует!!!
+            if (i == -1)
             {
                 return new IntPolynomial();
             }
@@ -188,13 +188,35 @@ namespace EEafp
             return res;
         }
 
+        public static BigInteger NyamGCD(BigInteger a, BigInteger b)
+        {
+            BigInteger x = BigInteger.Abs(a);
+            BigInteger y = BigInteger.Abs(b);
+            BigInteger r;
+            while (y != 0)
+            {
+                r = x % y;
+                x = y;
+                y = r;
+            }
+            return x;
+        }
+
+        public BigInteger CoeffGCD()
+        {
+            BigInteger CurrGCD = this[0];
+            for (int i=1; i < this.size; i++)
+            {
+                CurrGCD = NyamGCD(CurrGCD, this[i]);
+            }
+            return CurrGCD;
+        }
+
         protected override GCDResult PolyGCD(IntPolynomial g, out IntPolynomial gcd)
         {
-            throw new NotImplementedException("fix this dude");
             IntPolynomial f = this;
             GCDResult A = new GCDResult(new IntPolynomial { 1 }, new IntPolynomial { 0 });
             GCDResult B = new GCDResult(new IntPolynomial { 0 }, new IntPolynomial { 1 });
-            GCDResult Temp;
             IntPolynomial a, b;
             if (f.degree > g.degree)
             {
@@ -208,26 +230,19 @@ namespace EEafp
             }
             while (!b.IsNull())
             {
-                DividionResult divres = a / b;
+                BigInteger CurrentMultiplyCoeff = BigInteger.Pow(b[b.size - 1], (a.size - 1) - (b.size - 1) + 1);
+                DividionResult divres = (a * CurrentMultiplyCoeff) / b;
                 a = b;
-                b = divres.Item2;
-                Temp = new GCDResult(A - new GCDResult(B.Item1 * divres.Quotient, B.Item2 * divres.Quotient));
-                A = B;
-                B = Temp;
-
+                BigInteger CoeffReminder = divres.Item2.CoeffGCD();
+                b = divres.Item2 / CoeffReminder;
             }
             gcd = a;
-            if (f.degree <= g.degree)
+            if (gcd[gcd.size-1] < 0)
             {
-                A = new GCDResult(A.Coef2, A.Coef1);
-            }
-            if (gcd[gcd.degree] < 0)
-            {
-                gcd = -gcd;
-                return new GCDResult(-A.Item1, -A.Item2);
+                gcd *= -1;
             }
             return new GCDResult(A.Item1, A.Item2);
         }
-        #endregion
     }
+        #endregion
 }
