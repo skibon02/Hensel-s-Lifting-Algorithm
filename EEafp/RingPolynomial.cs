@@ -600,7 +600,7 @@ namespace EEafp
             return res;
         }
 
-        public static List<RingPolynomial> GetNODCoefficientForHensel(RingDecomposeList fDecompose)
+        public static List<RingPolynomial> GetGCDCoefficientForHensel(RingDecomposeList fDecompose)
         {
             List<RingPolynomial> factorsOfCoeff = new List<RingPolynomial>();
             List<RingPolynomial> resultCoeff = new List<RingPolynomial>();
@@ -620,6 +620,11 @@ namespace EEafp
                     {
                         factorsOfCoeff[i] *= fDecompose[j];
                     }
+                }
+                if (i != 0)
+                {
+                    // считаем, что первый множитель разложения содержит степень исходного многочлена
+                    factorsOfCoeff[i] *= fDecompose.polyCoef;
                 }
             }
 
@@ -648,12 +653,12 @@ namespace EEafp
 
         public static RingDecomposeList HenselLifting(IntPolynomial f, RingDecomposeList fFactorization, List<RingPolynomial> GCDCoeffs, int liftingDegree)
         {
-            //ZPolynomial.GCD(f, f.Derivative(), out hasSquares);
-            //ZPolynomial SquareFreef = (f / hasSquares).Quotient;
-            IntPolynomial SquareFreef = f;
+            IntPolynomial hasSquares;
+            IntPolynomial.GCD(f, f.Derivative(), out hasSquares);
+            IntPolynomial SquareFreef = (f / hasSquares).Quotient;
             BigInteger p = RingBint.mod;
 
-            fFactorization.polyCoef = f[f.size - 1];
+            BigInteger OriginalCoeff = f[f.size - 1];
 
             RingDecomposeList LiftingRes = new RingDecomposeList(fFactorization);
 
@@ -664,7 +669,7 @@ namespace EEafp
                 {
                     multiplyFactor *= new IntPolynomial(LiftingRes[i]);
                 }
-                multiplyFactor *= fFactorization.polyCoef.val / multiplyFactor[multiplyFactor.size - 1];
+                multiplyFactor *= OriginalCoeff / multiplyFactor[multiplyFactor.size - 1];
 
                 var temp = SquareFreef - multiplyFactor;
                 RingPolynomial d = new RingPolynomial(temp / BigInteger.Pow(p, t));
@@ -681,7 +686,7 @@ namespace EEafp
 
             }
             SetModContext(BigInteger.Pow(p, liftingDegree));
-            LiftingRes[0] *= (RingBint)fFactorization.polyCoef / LiftingRes[0][LiftingRes[0].degree];
+            LiftingRes[0] *= (RingBint)OriginalCoeff / LiftingRes[0][LiftingRes[0].degree];
             return LiftingRes;
         }
 

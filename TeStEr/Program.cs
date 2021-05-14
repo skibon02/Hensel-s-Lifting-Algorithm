@@ -118,7 +118,7 @@ namespace EEafp
             RingPolynomial f_inring = new RingPolynomial(f);
             f_inring.Print();
             var factorization = f_inring.BerlekampFactor();
-            var GCDfactor = RingPolynomial.GetNODCoefficientForHensel(factorization);
+            var GCDfactor = RingPolynomial.GetGCDCoefficientForHensel(factorization);
             RingPolynomial allGCDResult = new RingPolynomial { 0 };
 
             List<RingPolynomial> factorsOfCoeff = new List<RingPolynomial>();
