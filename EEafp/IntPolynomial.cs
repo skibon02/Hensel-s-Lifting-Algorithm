@@ -6,31 +6,31 @@ using System.Linq;
 
 namespace EEafp
 {
-    public class ZPolynomial : AbstractPolynomial<BigInteger, ZPolynomial>
+    public class IntPolynomial : AbstractPolynomial<BigInteger, IntPolynomial>
     {
         public override string SetLetter => "Z";
 
-        public ZPolynomial() : base() { }
-        public ZPolynomial(BigInteger[] Bints) : base(Bints) { }
-        public ZPolynomial(ZPolynomial p1) : base(p1) { }
-        public ZPolynomial(RingPolynomial p1)
+        public IntPolynomial() : base() { }
+        public IntPolynomial(BigInteger[] Bints) : base(Bints) { }
+        public IntPolynomial(IntPolynomial p1) : base(p1) { }
+        public IntPolynomial(RingPolynomial p1)
         {
             for (int i = 0; i < p1.size; i++)
             {
-                BigInteger curElem = new BigInteger(p1[i]);
-                this.Add(curElem);
+                BigInteger curElem = p1[i].val;
+                Add(p1[i].val);
             }
         }
-        public ZPolynomial(int size) : base(size) { }
+        public IntPolynomial(int size) : base(size) { }
 
 
-        public override ZPolynomial Normalize()
+        public override IntPolynomial Normalize()
         {
             int i;
             for (i = degree; i >= 0 && this[i] == 0; i--) ;
-            if (i == -1)
+            if (i == -1) //-1 степень существует!!!
             {
-                return new ZPolynomial();
+                return new IntPolynomial();
             }
             else
             {
@@ -39,18 +39,18 @@ namespace EEafp
                 return this;
             }
         }
-        public override ZPolynomial Pow(int times)
+        public override IntPolynomial Pow(int times)
         {
-            ZPolynomial res = new ZPolynomial(this);
+            IntPolynomial res = new IntPolynomial(this);
             for (int i = 0; i < times; i++)
             {
                 res *= res;
             }
             return res;
         }
-        public ZPolynomial Derivative()
+        public IntPolynomial Derivative()
         {
-            ZPolynomial res = new ZPolynomial(size - 1);
+            IntPolynomial res = new IntPolynomial(size - 1);
 
             for (int i = 0; i < res.size; i++)
             {
@@ -58,9 +58,9 @@ namespace EEafp
             }
             return res;
         }
-        public override ZPolynomial Shift(int nyam)
+        public override IntPolynomial Shift(int nyam)
         {
-            ZPolynomial res = new ZPolynomial(this);
+            IntPolynomial res = new IntPolynomial(this);
 
             res.coef.InsertRange(0, Enumerable.Repeat(new BigInteger(), nyam).ToArray());
 
@@ -69,19 +69,19 @@ namespace EEafp
 
         #region operators
 
-        protected override ZPolynomial PolySum(ZPolynomial p2)
+        protected override IntPolynomial PolySum(IntPolynomial p2)
         {
-            ZPolynomial p1 = this;
-            ZPolynomial maxp;
-            ZPolynomial minp;
+            IntPolynomial p1 = this;
+            IntPolynomial maxp;
+            IntPolynomial minp;
             if (p2.degree > p1.degree)
             {
-                maxp = new ZPolynomial(p2);
+                maxp = new IntPolynomial(p2);
                 minp = p1;
             }
             else
             {
-                maxp = new ZPolynomial(p1);
+                maxp = new IntPolynomial(p1);
                 minp = p2;
             }
 
@@ -93,10 +93,10 @@ namespace EEafp
             return maxp.Normalize();
         }
 
-        protected override ZPolynomial PolyMin()
+        protected override IntPolynomial PolyMin()
         {
-            ZPolynomial p1 = this;
-            ZPolynomial res = new ZPolynomial(p1);
+            IntPolynomial p1 = this;
+            IntPolynomial res = new IntPolynomial(p1);
 
             for (int i = 0; i < p1.size; i++)
             {
@@ -104,16 +104,16 @@ namespace EEafp
             }
             return res;
         }
-        protected override ZPolynomial PolyMin(ZPolynomial p2)
+        protected override IntPolynomial PolyMin(IntPolynomial p2)
         {
-            ZPolynomial p1 = this;
+            IntPolynomial p1 = this;
             return (p1 + (-p2)).Normalize();
         }
 
-        protected override ZPolynomial PolyMul(ZPolynomial p2)
+        protected override IntPolynomial PolyMul(IntPolynomial p2)
         {
-            ZPolynomial p1 = this;
-            ZPolynomial res = new ZPolynomial(p1.degree + p2.degree + 1);
+            IntPolynomial p1 = this;
+            IntPolynomial res = new IntPolynomial(p1.degree + p2.degree + 1);
 
             for (int i = 0; i < p1.size; i++)
             {
@@ -125,15 +125,15 @@ namespace EEafp
             return res;
         }
 
-        protected override ZPolynomial PolyMul(BigInteger nyam)
+        protected override IntPolynomial PolyMul(BigInteger nyam)
         {
-            ZPolynomial p1 = this;
+            IntPolynomial p1 = this;
             if (nyam == 0)
             {
-                return new ZPolynomial();
+                return new IntPolynomial();
             }
 
-            ZPolynomial res = new ZPolynomial(p1);
+            IntPolynomial res = new IntPolynomial(p1);
 
             for (int i = 0; i < res.size; i++)
             {
@@ -143,12 +143,11 @@ namespace EEafp
             return res;
         }
 
-        protected override DividionResult PolyDiv(ZPolynomial p2)
+        protected override DividionResult PolyDiv(IntPolynomial p2)
         {
-            throw new NotImplementedException("fix this dude");
-            ZPolynomial p1 = this;
-            ZPolynomial r = new ZPolynomial(p1);
-            ZPolynomial q = new ZPolynomial();
+            IntPolynomial p1 = this;
+            IntPolynomial r = new IntPolynomial(p1);
+            IntPolynomial q = new IntPolynomial();
             if (p2.IsNull())
                 throw new DivideByZeroException("Why are you gay?");
             for (int i = p1.degree; i >= p2.degree; i--)
@@ -176,10 +175,10 @@ namespace EEafp
             return new DividionResult(q, r);
         }
 
-        protected override ZPolynomial PolyDiv(BigInteger nyam)
+        protected override IntPolynomial PolyDiv(BigInteger nyam)
         {
-            ZPolynomial p1 = this;
-            ZPolynomial res = new ZPolynomial(p1);
+            IntPolynomial p1 = this;
+            IntPolynomial res = new IntPolynomial(p1);
             for (int i = 0; i < p1.size; i++)
             {
                 if(res[i] % nyam != 0)
@@ -189,23 +188,23 @@ namespace EEafp
             return res;
         }
 
-        protected override GCDResult PolyGCD(ZPolynomial g, out ZPolynomial gcd)
+        protected override GCDResult PolyGCD(IntPolynomial g, out IntPolynomial gcd)
         {
             throw new NotImplementedException("fix this dude");
-            ZPolynomial f = this;
-            GCDResult A = new GCDResult(new ZPolynomial { 1 }, new ZPolynomial { 0 });
-            GCDResult B = new GCDResult(new ZPolynomial { 0 }, new ZPolynomial { 1 });
+            IntPolynomial f = this;
+            GCDResult A = new GCDResult(new IntPolynomial { 1 }, new IntPolynomial { 0 });
+            GCDResult B = new GCDResult(new IntPolynomial { 0 }, new IntPolynomial { 1 });
             GCDResult Temp;
-            ZPolynomial a, b;
+            IntPolynomial a, b;
             if (f.degree > g.degree)
             {
-                a = new ZPolynomial(f);
-                b = new ZPolynomial(g);
+                a = new IntPolynomial(f);
+                b = new IntPolynomial(g);
             }
             else
             {
-                a = new ZPolynomial(g);
-                b = new ZPolynomial(f);
+                a = new IntPolynomial(g);
+                b = new IntPolynomial(f);
             }
             while (!b.IsNull())
             {

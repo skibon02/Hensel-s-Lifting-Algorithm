@@ -11,55 +11,12 @@ namespace EEafp
         public static bool LogEnabled = true;
         static void Main(string[] args)
         {
-            // TODO:
-            // 1) Разобраться с проблемой кратных множителей
-            // 2) Закончить Подъем Гензеля
-
-
             Console.ForegroundColor = ConsoleColor.White;
             RingPolynomial.SetModContext(5);
-            //RingPolynomial checkCoeffsPoly = new RingPolynomial { 1, 2, 3 } * new RingPolynomial { 1, 1 } * new RingPolynomial {0, 1 } * new RingPolynomial { 1, 0, 0, 0, 1 };
-            //RingPolynomial checkCoeffsPoly = new RingPolynomial { 1, 2, 3, 4, 2, 3, 5, 2, 1, 4, 5, 3, 6, 5 } * new RingPolynomial { 1, 2, 3 } * new RingPolynomial { 1, 2, 3 };
-            ZPolynomial f = new ZPolynomial { 12, 6 } * new ZPolynomial { 6, 2 } * new ZPolynomial { 48, 8 } * new ZPolynomial { 4, 1} * new ZPolynomial { 1, 1, 1};
-            RingPolynomial f_inring = new RingPolynomial(f);
-            f_inring.Print();
-            var factorization = f_inring.BerlekampFactor();
-            var GCDfactor = RingPolynomial.GetNODCoefficientForHensel(factorization);
-            RingPolynomial allGCDResult = new RingPolynomial { 0 };
 
-            List<RingPolynomial> factorsOfCoeff = new List<RingPolynomial>();
-            for (int i = 0; i < factorization.CountUniq; i++)
-            {
-                factorsOfCoeff.Add(new RingPolynomial { 1 });
-            }
-            for (int i = 0; i < factorization.CountUniq; i++)
-            {
-                for (int j = 0; j < factorization.CountUniq; j++)
-                {
-                    if (i != j)
-                    {
-                        factorsOfCoeff[i] *= factorization.UniqDecomposeElems[j];
-                        Console.Write("(" + factorization.UniqDecomposeElems[j] + ")*");
-                    }
-                }
-                allGCDResult += factorsOfCoeff[i]*GCDfactor[i];
-                Console.Write("(" + GCDfactor[i] + ")\n");
-            }
-            allGCDResult.Print();
-
-            // после поднятия mod уже увеличился
-            var liftedDecomposition = RingPolynomial.HenselLifting(f, factorization, GCDfactor, 7);
-            RingPolynomial checkLiftedDecomposition = new RingPolynomial { 1};
-
-
-            for (int i=0; i < liftedDecomposition.CountUniq; i++)
-            {
-                liftedDecomposition.UniqDecomposeElems[i].Print();
-                checkLiftedDecomposition *= liftedDecomposition.UniqDecomposeElems[i];
-            }
-            Program.Log("Проверяем декомпозицию поднятую:");
-            checkLiftedDecomposition.Print('r');
-            f.Print();
+            IntPolynomial poly = new IntPolynomial { 2, 2, 4, 0, -2 };
+            var divres = poly / 2;
+            divres.Print();
 
             Console.Read(); 
         }

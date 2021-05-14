@@ -34,7 +34,7 @@ namespace EEafp
                 {
                     anotherOne = new RingPolynomial();
                     for (int j = 0; j < rnd.Next(minPower, maxPower); j++)
-                        anotherOne.Add(rnd.Next(true ? 0 : 1, RingBint.mod-1));
+                        anotherOne.Add(rnd.Next(true ? 0 : 1, (int)RingBint.mod-1));
                 } while (anotherOne.IsNull());
 
                 for_factorization *= anotherOne;
@@ -69,27 +69,28 @@ namespace EEafp
             }
             return new RingPolynomial();
         }
-        static bool TestBerlekampFactor(RingPolynomial for_factorization)
+        static bool TestBerlekampFactor(RingPolynomial f)
         {
-
-            
-            RingPolynomial factorization = new RingPolynomial { 1 };
-            var res = for_factorization.BerlekampFactor();
-            res.ForEach((val) => factorization *= val);
+            RingPolynomial composition = new RingPolynomial { 1 };
+            var res = f.BerlekampFactor();
+            res.divisors.ForEach((val) => {
+                for (int i = 0; i < val.count; i++)
+                    composition *= val.poly;
+                });
+            composition *= res.polyCoef;
             Program.Log("Произведение делителей:");
-            factorization.Print();
+            composition.Print();
 
             Program.LogEnabled = false;
-            bool allAreIrreducible = res.All((val) => val.BerlekampFactor().Count == 1);
+            bool allAreIrreducible = res.All((val) => val.BerlekampFactor().CountUniq == 1);
             Program.LogEnabled = true;
 
-            return (factorization - for_factorization).IsNull() && allAreIrreducible;
+            return (composition - f).IsNull() && allAreIrreducible;
         }
 
         static void Main(string[] args)
         {
-            //TestSolvingEquation(new Polynomial { -1, 0, 0, 2, 1 }, new Polynomial { 1, 0, 0, 1 }, new Polynomial { 1, 0, 1 });
-            RingPolynomial.SetModContext(17);
+            RingPolynomial.SetModContext(11);
 
             List<RingPolynomial> dividers;
             TestBerlekampFactor(new RingPolynomial { 1, 1, 1 });
@@ -97,8 +98,8 @@ namespace EEafp
 
             RingPolynomial test;
             do
-            { 
-                test = PrepareInputBerlekamp(out dividers, BerlekampMode.Ultra);
+            {
+                test = PrepareInputBerlekamp(out dividers, BerlekampMode.Medium);
 
             } while (TestBerlekampFactor(test));
 
@@ -107,7 +108,53 @@ namespace EEafp
 
             Console.Read();
         }
+        static void LiftingTest()
+        {
 
+            //RingPolynomial checkCoeffsPoly = new RingPolynomial { 1, 2, 3 } * new RingPolynomial { 1, 1 } * new RingPolynomial {0, 1 } * new RingPolynomial { 1, 0, 0, 0, 1 };
+            //RingPolynomial checkCoeffsPoly = new RingPolynomial { 1, 2, 3, 4, 2, 3, 5, 2, 1, 4, 5, 3, 6, 5 } * new RingPolynomial { 1, 2, 3 } * new RingPolynomial { 1, 2, 3 };
+            RingPolynomial.SetModContext(5);
+            IntPolynomial f = new IntPolynomial { -1, 2 } * new IntPolynomial { 1, 2 };
+            RingPolynomial f_inring = new RingPolynomial(f);
+            f_inring.Print();
+            var factorization = f_inring.BerlekampFactor();
+            var GCDfactor = RingPolynomial.GetNODCoefficientForHensel(factorization);
+            RingPolynomial allGCDResult = new RingPolynomial { 0 };
+
+            List<RingPolynomial> factorsOfCoeff = new List<RingPolynomial>();
+            for (int i = 0; i < factorization.CountUniq; i++)
+            {
+                factorsOfCoeff.Add(new RingPolynomial { 1 });
+            }
+            for (int i = 0; i < factorization.CountUniq; i++)
+            {
+                for (int j = 0; j < factorization.CountUniq; j++)
+                {
+                    if (i != j)
+                    {
+                        factorsOfCoeff[i] *= factorization[j];
+                        Console.Write("(" + factorization[j] + ")*");
+                    }
+                }
+                allGCDResult += factorsOfCoeff[i] * GCDfactor[i];
+                Console.Write("(" + GCDfactor[i] + ")\n");
+            }
+            allGCDResult.Print();
+
+            // после поднятия mod уже увеличился
+            var liftedDecomposition = RingPolynomial.HenselLifting(f, factorization, GCDfactor, 2);
+            RingPolynomial checkLiftedDecomposition = new RingPolynomial { 1 };
+
+
+            for (int i = 0; i < liftedDecomposition.CountUniq; i++)
+            {
+                liftedDecomposition[i].Print();
+                checkLiftedDecomposition *= liftedDecomposition[i];
+            }
+            Program.Log("Проверяем декомпозицию поднятую:");
+            checkLiftedDecomposition.Print('r');
+            f.Print();
+        }
 
         static void RingPolyTest()
         {
@@ -123,15 +170,15 @@ namespace EEafp
                 RingPolynomial c = new RingPolynomial();
                 for (int i = 0; i < flen; i++)
                 {
-                    f.Add(rnd.Next(0, RingBint.mod));
+                    f.Add(rnd.Next(0, (int)RingBint.mod));
                 }
                 for (int i = 0; i < glen; i++)
                 {
-                    g.Add(rnd.Next(0, RingBint.mod));
+                    g.Add(rnd.Next(0, (int)RingBint.mod));
                 }
                 for (int i = 0; i < clen; i++)
                 {
-                    c.Add(rnd.Next(0, RingBint.mod));
+                    c.Add(rnd.Next(0, (int)RingBint.mod));
                 }
                 f = f.Normalize();
                 g = g.Normalize();

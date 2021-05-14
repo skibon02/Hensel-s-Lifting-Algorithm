@@ -16,7 +16,6 @@ namespace EEafp
                     Console.Write(matrix[i, j].val + " ");
                 }
 
-                Console.Write(Program.GetTab);
                 Console.WriteLine();
             }
             Console.Write(Program.GetTab);
@@ -34,7 +33,6 @@ namespace EEafp
                 {
                     Console.Write(answer[i][j] + " ");
                 }
-                Console.Write(Program.GetTab);
                 Console.WriteLine();
             }
             Console.Write(Program.GetTab);
