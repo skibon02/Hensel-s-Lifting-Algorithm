@@ -21,3 +21,23 @@ E:\programming\С#\Hensel's lifting algorithm\TeStEr\obj\Debug\net5.0\ref\TeStEr
 E:\programming\С#\Hensel's lifting algorithm\TeStEr\obj\Debug\net5.0\TeStEr.pdb
 E:\programming\С#\Hensel's lifting algorithm\TeStEr\obj\Debug\net5.0\TeStEr.genruntimeconfig.cache
 E:\programming\С#\Hensel's lifting algorithm\TeStEr\obj\Debug\net5.0\TeStEr.csprojAssemblyReference.cache
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\bin\Debug\net5.0\EEafp.exe
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\bin\Debug\net5.0\TeStEr.exe
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\bin\Debug\net5.0\TeStEr.deps.json
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\bin\Debug\net5.0\TeStEr.runtimeconfig.json
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\bin\Debug\net5.0\TeStEr.runtimeconfig.dev.json
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\bin\Debug\net5.0\TeStEr.dll
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\bin\Debug\net5.0\ref\TeStEr.dll
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\bin\Debug\net5.0\TeStEr.pdb
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\bin\Debug\net5.0\EEafp.dll
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\bin\Debug\net5.0\EEafp.pdb
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\obj\Debug\net5.0\TeStEr.csprojAssemblyReference.cache
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\obj\Debug\net5.0\TeStEr.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\obj\Debug\net5.0\TeStEr.AssemblyInfoInputs.cache
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\obj\Debug\net5.0\TeStEr.AssemblyInfo.cs
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\obj\Debug\net5.0\TeStEr.csproj.CoreCompileInputs.cache
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\obj\Debug\net5.0\TeStEr.csproj.CopyComplete
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\obj\Debug\net5.0\TeStEr.dll
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\obj\Debug\net5.0\ref\TeStEr.dll
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\obj\Debug\net5.0\TeStEr.pdb
+C:\Users\Vitas\Hensel-s-Lifting-Algorithm\TeStEr\obj\Debug\net5.0\TeStEr.genruntimeconfig.cache

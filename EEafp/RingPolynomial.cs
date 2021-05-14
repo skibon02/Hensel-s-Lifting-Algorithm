@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
 
 namespace EEafp
 {
@@ -88,6 +89,16 @@ namespace EEafp
         public RingPolynomial() : base() { }
         public RingPolynomial(RingBint[] ringBints) : base(ringBints) { }
         public RingPolynomial(RingPolynomial p1) : base(p1) { }
+
+        public RingPolynomial(ZPolynomial p1)
+        {
+            for (int i = 0; i < p1.size; i++)
+            {
+                int currElem = (int)(p1[i] % RingBint.mod);
+                this.Add(currElem);
+            }
+        }
+
         public RingPolynomial(int size) : base(size) { }
 
 
@@ -236,6 +247,16 @@ namespace EEafp
             return new DividionResult(q, r);
         }
 
+        protected override RingPolynomial PolyDiv(RingBint nyam)
+        {
+            RingPolynomial p1 = this;
+            RingPolynomial res = new RingPolynomial(p1);
+            for (int i = 0; i < p1.size; i++)
+            {
+                res[i] *= nyam;
+            }
+            return res;
+        }
         protected override GCDResult PolyGCD(RingPolynomial g, out RingPolynomial gcd)
         {
             RingPolynomial f = this;
@@ -386,22 +407,22 @@ namespace EEafp
         }
 
 
-        public List<RingPolynomial> BerlekampFactor()
+        public RingDecomposeList BerlekampFactor()
         {
             Program.recDepth++;
-            RingPolynomial poly = this;
+            RingPolynomial poly = this.Normalize();
 
             if (this.degree < 2) // если многочлен меньше второй степени, то и раскладывать смысла нет
             {
                 Program.Log("Разложение для " + poly + " не требуется.");
                 //end
                 Program.recDepth--;
-                return new List<RingPolynomial> { poly };
+                return new RingDecomposeList { poly };
             }
 
             Program.Log("Поиск разложения для многочлена:");
             if (Program.LogEnabled) poly.Print('a');
-            List<RingPolynomial> factorRes = new List<RingPolynomial>(); // результат - список делителей
+            RingDecomposeList factorRes = new RingDecomposeList(); // результат - список делителей
 
 
             // 1) убираем кратные множители
@@ -416,7 +437,7 @@ namespace EEafp
                 {
                     g[i] = gcdDerivative[i*RingBint.mod];
                 }
-                List<RingPolynomial> gFactorRes = g.BerlekampFactor();
+                RingDecomposeList gFactorRes = g.BerlekampFactor();
                 for (int i=0; i< RingBint.mod; i++)
                 {
                     factorRes.AddRange(gFactorRes);
@@ -438,7 +459,7 @@ namespace EEafp
                 gcdDerivative *= (new RingBint(1) / gcdDerivative[gcdDerivative.degree]);
                 Program.Log("Обнаружены кратные множители. Рекурсивный вызов для b(x) = " + gcdDerivative);
                 poly = (poly / gcdDerivative).Quotient; //текущий многочлен теперь c(x)
-                List<RingPolynomial> factorResForGcdDerivative = gcdDerivative.BerlekampFactor(); //рекурсивный вызов для b(x)
+                RingDecomposeList factorResForGcdDerivative = gcdDerivative.BerlekampFactor(); //рекурсивный вызов для b(x)
                 factorRes.AddRange(factorResForGcdDerivative);
             } 
             else
@@ -484,8 +505,8 @@ namespace EEafp
                 var decomposeResult = BerlekampDecompose(poly, 0);
                 Program.recDepth++;
 
-                decomposeResult[0] *= leadingCoeff;
                 factorRes.AddRange(decomposeResult);
+                factorRes[0] *= leadingCoeff;
             }
             else
             {
@@ -509,14 +530,14 @@ namespace EEafp
         }
 
         static RingBint[][] _BerlekampDecomposingPoly;
-        static List<RingPolynomial> BerlekampDecompose(RingPolynomial curPoly, int depth)
+        static RingDecomposeList BerlekampDecompose(RingPolynomial curPoly, int depth)
         {
             if (depth >= _BerlekampDecomposingPoly.Length)
-                return new List<RingPolynomial> { curPoly };  
+                return new RingDecomposeList { curPoly };  
 
             Program.recDepth++;
-            List<RingPolynomial> tempres = new List<RingPolynomial>();
-            List<RingPolynomial> res = new List<RingPolynomial>();
+            RingDecomposeList tempres = new RingDecomposeList();
+            RingDecomposeList res = new RingDecomposeList();
 
             Program.Log("Поиск возможных множителей с помощью разлагающих многочленов");
             for (int i = depth; i < _BerlekampDecomposingPoly.Length; i++)
@@ -550,7 +571,84 @@ namespace EEafp
             Program.Log("Многочлен неприводимый. выход.");
 
             Program.recDepth--;
-            return new List<RingPolynomial> { curPoly };
+            return new RingDecomposeList { curPoly };
+        }
+
+        public static List<RingPolynomial> GetNODCoefficientForHensel(RingDecomposeList fDecompose)
+        {
+            List<RingPolynomial> factorsOfCoeff = new List<RingPolynomial>();
+            List<RingPolynomial> resultCoeff = new List<RingPolynomial>();
+            // изначально задаем все значения коэффициентов единичными
+            // и множителей разложения тоже
+            for (int i = 0; i < fDecompose.CountUniq; i++)
+            {
+                resultCoeff.Add(new RingPolynomial { 1 });
+                factorsOfCoeff.Add(new RingPolynomial { 1 });
+            }
+            // запоминаем все сомножители искомого разложения
+            for (int i = 0; i < fDecompose.CountUniq; i++)
+            {
+                for (int j = 0; j < fDecompose.CountUniq; j++)
+                {
+                    if (i != j)
+                    {
+                        factorsOfCoeff[i] *= fDecompose.UniqDecomposeElems[j];
+                    }
+                }
+            }
+
+            RingPolynomial currentGCD = new RingPolynomial();
+            for (int i = 0; i < fDecompose.CountUniq - 1; i++)
+            {
+                GCDResult currCoefficient = GCD(factorsOfCoeff[i], factorsOfCoeff[i+1], out currentGCD);
+                // раскрываем последовательно GCD, ища GCD соседних множителей [gcd(a, b, c) = gcd(gcd(a, b), c) = gcd(currentGCD, c)]
+                factorsOfCoeff[i + 1] = currentGCD;
+                for (int j=0; j < i+1; j++)
+                {
+                    resultCoeff[j] *= currCoefficient.Coef1;
+                }
+                resultCoeff[i+1] *= currCoefficient.Coef2;
+            }
+
+            // Заменяем коэффициенты их остатками от деления на i элемент факторизации (deg(resultCoeff[i]) < deg(fDecompose[i]))
+            for (int i = 0; i < fDecompose.CountUniq; i++)
+            {
+                resultCoeff[i] = (resultCoeff[i] / fDecompose.UniqDecomposeElems[i]).Reminder;
+                for (int j=0; j < resultCoeff[i].size; j++) resultCoeff[i][j] /= currentGCD[0]; // нормализуем
+            }
+
+            return resultCoeff;
+        }
+
+        public static RingDecomposeList HenselLifting(ZPolynomial f, RingDecomposeList fFactorization, List<RingPolynomial> GCDCoeffs, int liftingDegree)
+        {
+            ZPolynomial hasSquares;
+            ZPolynomial.GCD(f, f.Derivative(), out hasSquares);
+            ZPolynomial SquareFreef = (f / hasSquares).Quotient;
+
+            ZPolynomial multiplyFactor = new ZPolynomial { 1 };
+            for (int i=0; i < fFactorization.CountUniq; i++)
+            {
+                ZPolynomial curPoly = new ZPolynomial(fFactorization.UniqDecomposeElems[i]);
+                multiplyFactor *= curPoly;
+            }
+
+            RingDecomposeList LiftingRes = new RingDecomposeList(fFactorization);
+            RingPolynomial d;
+            for (int i=1; i < liftingDegree; i++)
+            {
+                d = new RingPolynomial(SquareFreef - multiplyFactor);
+                for (int t=0; t < i; t++)
+                {
+                    d = d / RingBint.mod;
+                }
+                for (int j=0; j < fFactorization.CountUniq; j++)
+                {
+                    RingPolynomial currCoeff = ((d* GCDCoeffs[i])/ fFactorization.UniqDecomposeElems[i]).Reminder;
+                    LiftingRes[i] += currCoeff * RingBint.mod; // неверно, должен быть ZPolynomial, BigInteger и RingBint.mod^i
+                }
+            } 
+            return LiftingRes;
         }
 
     }
