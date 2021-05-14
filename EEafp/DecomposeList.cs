@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Numerics;
 
 namespace EEafp
 {
@@ -14,12 +15,15 @@ namespace EEafp
         public List<RingPolynomial> UniqDecomposeElems;
         List<int> nyamDecomposeElem;
 
+        public BigInteger originalPolyCoefficient;
+
         public RingDecomposeList() 
         {
             UniqDecomposeElems = new List<RingPolynomial>();
             AllDecomposeElems = new List<RingPolynomial>();
             nyamDecomposeElem = new List<int>();
             this.polyCoefficient = 1;
+            originalPolyCoefficient = 1;
         }
 
         public RingDecomposeList(RingDecomposeList list)
@@ -28,6 +32,7 @@ namespace EEafp
             AllDecomposeElems = new List<RingPolynomial>(list.AllDecomposeElems);
             nyamDecomposeElem = new List<int>(list.nyamDecomposeElem);
             this.polyCoefficient = list.polyCoefficient;
+            originalPolyCoefficient = list.originalPolyCoefficient;
         }
         public virtual void Add(RingPolynomial poly)
         {
@@ -74,6 +79,8 @@ namespace EEafp
                     nyamDecomposeElem.Add(1);
                 }
             }
+            AllDecomposeElems[0] *= polyCoefficient / AllDecomposeElems[0][AllDecomposeElems[0].size - 1];
+            UniqDecomposeElems[0] *= polyCoefficient / UniqDecomposeElems[0][UniqDecomposeElems[0].size - 1];
         }
 
         public RingPolynomial this[int i]
@@ -84,12 +91,26 @@ namespace EEafp
             }
             set
             {
-                if (value[value.size - 1] != 1)
+                if (nyamDecomposeElem[i] == 1 || UniqDecomposeElems[i]* value[value.size - 1] == value)
+                {
+                    UniqDecomposeElems[i] = value / value[value.size - 1];
+                } else
+                {
+                    UniqDecomposeElems.Add(value);
+                }
+                if (value[value.size - 1] != 1 && i != 0)
                 {
                     polyCoefficient *= value[value.size - 1];
                     AllDecomposeElems[i] = value / value[value.size - 1];
+                    AllDecomposeElems[0] *= polyCoefficient / AllDecomposeElems[0][AllDecomposeElems[0].size - 1];
+                    UniqDecomposeElems[0] *= polyCoefficient / UniqDecomposeElems[0][UniqDecomposeElems[0].size - 1];
                 }
-                else
+                else if (i == 0)
+                {
+                    polyCoefficient = value[value.size - 1];
+                    AllDecomposeElems[0] = value;
+                    UniqDecomposeElems[0] = value;
+                } else
                 {
                     AllDecomposeElems[i] = value;
                 }
