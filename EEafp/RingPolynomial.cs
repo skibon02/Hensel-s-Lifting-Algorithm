@@ -622,45 +622,47 @@ namespace EEafp
 
         public static RingDecomposeList HenselLifting(ZPolynomial f, RingDecomposeList fFactorization, List<RingPolynomial> GCDCoeffs, int liftingDegree)
         {
-            ZPolynomial hasSquares;
             //ZPolynomial.GCD(f, f.Derivative(), out hasSquares);
             //ZPolynomial SquareFreef = (f / hasSquares).Quotient;
             ZPolynomial SquareFreef = f;
-            int originalMod = RingBint.mod; // возможно должен быть bigint
+            RingPolynomial RingF = new RingPolynomial(f);
+            int p = RingBint.mod;
 
-            ZPolynomial multiplyFactor = new ZPolynomial {fFactorization.polyCoefficient};
-            for (int i=0; i < fFactorization.CountUniq; i++)
-            {
-                ZPolynomial curPoly = new ZPolynomial(fFactorization.UniqDecomposeElems[i]);
-                multiplyFactor *= curPoly;
-            }
 
-            RingDecomposeList LiftingRes = new RingDecomposeList(fFactorization);
-            RingPolynomial d;
-            for (int i=1; i < liftingDegree; i++)
+            //RingDecomposeList LiftingRes = new RingDecomposeList(fFactorization);
+            List<ZPolynomial> LiftingRes = new List<ZPolynomial>(fFactorization.UniqDecomposeElems.Select(x=> new ZPolynomial(x)));
+            LiftingRes[0] *= fFactorization.polyCoefficient;
+
+            for (int t=1; t < liftingDegree; t++)
             {
-                ZPolynomial tempd = new ZPolynomial(SquareFreef);
-                for (int t = 0; t < i; t++)
+                ZPolynomial multiplyFactor = new ZPolynomial { 1 };
+                for (int i = 0; i < LiftingRes.Count; i++)
                 {
-                    tempd = tempd / originalMod;
-                    multiplyFactor /= originalMod;
+                    multiplyFactor *= new ZPolynomial(LiftingRes[i]);
                 }
-                RingPolynomial.SetModContext(originalMod);
-                d = new RingPolynomial(tempd - multiplyFactor);
-                RingPolynomial.SetModContext(Convert.ToInt32(Math.Pow(originalMod, i+1)));
-                for (int j=0; j < fFactorization.CountUniq; j++)
+
+                var temp = f - multiplyFactor;
+                RingPolynomial d = new RingPolynomial(temp / (BigInteger)Math.Pow(p, t));
+
+
+                for (int i=0; i < fFactorization.CountUniq; i++)
                 {
                     RingPolynomial currentUniqPoly = fFactorization.UniqDecomposeElems[i];
-                    if (j == 0)
+                    if (i == 0)
                     {
                         currentUniqPoly *= fFactorization.polyCoefficient;
-                        LiftingRes[j] *= LiftingRes.polyCoefficient;
                     }
-                    RingPolynomial currCoeff = ((d* GCDCoeffs[j])/ currentUniqPoly).Reminder;
-                    LiftingRes[j] += currCoeff * Convert.ToInt32(Math.Pow(RingBint.mod, i));
+                    ZPolynomial Gc =  new ZPolynomial((d * GCDCoeffs[i] / currentUniqPoly).Reminder);
+                    LiftingRes[i] = LiftingRes[i] + Gc * (BigInteger)Math.Pow(p, t);
                 }
-            } 
-            return LiftingRes;
+
+            }
+
+            SetModContext((int)Math.Pow(p,liftingDegree));
+            RingDecomposeList newRes = new RingDecomposeList();
+            newRes.polyCoefficient = fFactorization.polyCoefficient;
+            newRes.AddRange(LiftingRes.Select(x => new RingPolynomial(x)));
+            return newRes;
         }
 
     }

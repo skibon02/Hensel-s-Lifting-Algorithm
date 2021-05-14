@@ -8,47 +8,26 @@ namespace EEafp
 {
     public class RingDecomposeList: IEnumerable<RingPolynomial>
     {
-        public List<RingPolynomial> UniqDecomposeElems;
+        public int polyCoefficient;
         List<RingPolynomial> AllDecomposeElems;
+
+        public List<RingPolynomial> UniqDecomposeElems;
         List<int> nyamDecomposeElem;
-        public int polyCoefficient = 1;
 
         public RingDecomposeList() 
         {
             UniqDecomposeElems = new List<RingPolynomial>();
             AllDecomposeElems = new List<RingPolynomial>();
             nyamDecomposeElem = new List<int>();
+            this.polyCoefficient = 1;
         }
 
-        public RingDecomposeList(IEnumerable<RingPolynomial> RingPolyEnum)
+        public RingDecomposeList(RingDecomposeList list)
         {
-            UniqDecomposeElems = new List<RingPolynomial>();
-            AllDecomposeElems = new List<RingPolynomial>();
-            nyamDecomposeElem = new List<int>();
-
-            foreach (RingPolynomial poly in RingPolyEnum)
-            {
-                RingPolynomial TmpPoly = poly;
-                if (TmpPoly[TmpPoly.size - 1] != 1) {
-                    polyCoefficient *= TmpPoly[TmpPoly.size - 1];
-                    TmpPoly /= poly[poly.size - 1];
-                }
-                AllDecomposeElems.Add(TmpPoly);
-                bool isDuplicate = false;
-                for (int i = 0; i < UniqDecomposeElems.Count; i++)
-                {
-                    if (TmpPoly == UniqDecomposeElems[i])
-                    {
-                        nyamDecomposeElem[i]++;
-                        isDuplicate = true;
-                    }
-                }
-                if (!isDuplicate)
-                {
-                    UniqDecomposeElems.Add(TmpPoly);
-                    nyamDecomposeElem.Add(1);
-                }
-            }
+            UniqDecomposeElems = new List<RingPolynomial>(list.UniqDecomposeElems);
+            AllDecomposeElems = new List<RingPolynomial>(list.AllDecomposeElems);
+            nyamDecomposeElem = new List<int>(list.nyamDecomposeElem);
+            this.polyCoefficient = list.polyCoefficient;
         }
         public virtual void Add(RingPolynomial poly)
         {
@@ -109,6 +88,10 @@ namespace EEafp
                 {
                     polyCoefficient *= value[value.size - 1];
                     AllDecomposeElems[i] = value / value[value.size - 1];
+                }
+                else
+                {
+                    AllDecomposeElems[i] = value;
                 }
             }
         }

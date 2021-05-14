@@ -145,6 +145,7 @@ namespace EEafp
 
         protected override DividionResult PolyDiv(ZPolynomial p2)
         {
+            throw new NotImplementedException("fix this dude");
             ZPolynomial p1 = this;
             ZPolynomial r = new ZPolynomial(p1);
             ZPolynomial q = new ZPolynomial();
@@ -159,7 +160,13 @@ namespace EEafp
                     continue;
                 }
                 else
+                {
+                    if(r[i] % p2[p2.degree] != 0)
+                    {
+                        throw new Exception("U gay v2.0");
+                    }
                     curq = r[i] / p2[p2.degree];
+                }
 
                 r -= (p2 * curq).Shift(i - p2.degree);
                 q = q.Shift(1);
@@ -175,6 +182,8 @@ namespace EEafp
             ZPolynomial res = new ZPolynomial(p1);
             for (int i = 0; i < p1.size; i++)
             {
+                if(res[i] % nyam != 0)
+                    throw new Exception("wrong way dude");
                 res[i] /= nyam;
             }
             return res;
@@ -182,6 +191,7 @@ namespace EEafp
 
         protected override GCDResult PolyGCD(ZPolynomial g, out ZPolynomial gcd)
         {
+            throw new NotImplementedException("fix this dude");
             ZPolynomial f = this;
             GCDResult A = new GCDResult(new ZPolynomial { 1 }, new ZPolynomial { 0 });
             GCDResult B = new GCDResult(new ZPolynomial { 0 }, new ZPolynomial { 1 });

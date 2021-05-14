@@ -18,9 +18,12 @@ namespace EEafp
 
             Console.ForegroundColor = ConsoleColor.White;
             RingPolynomial.SetModContext(5);
-            RingPolynomial checkCoeffsPoly = new RingPolynomial { 1, 2, 3 } * new RingPolynomial { 1, 1 } * new RingPolynomial {0, 1 } * new RingPolynomial { 1, 0, 0, 0, 1 };
+            //RingPolynomial checkCoeffsPoly = new RingPolynomial { 1, 2, 3 } * new RingPolynomial { 1, 1 } * new RingPolynomial {0, 1 } * new RingPolynomial { 1, 0, 0, 0, 1 };
             //RingPolynomial checkCoeffsPoly = new RingPolynomial { 1, 2, 3, 4, 2, 3, 5, 2, 1, 4, 5, 3, 6, 5 } * new RingPolynomial { 1, 2, 3 } * new RingPolynomial { 1, 2, 3 };
-            var factorization = checkCoeffsPoly.BerlekampFactor();
+            ZPolynomial f = new ZPolynomial { 4,2 } * new ZPolynomial { 1,2 } * new ZPolynomial { 6, 1 } * new ZPolynomial { 4, 1};
+            RingPolynomial f_inring = new RingPolynomial(f);
+            f_inring.Print();
+            var factorization = f_inring.BerlekampFactor();
             var GCDfactor = RingPolynomial.GetNODCoefficientForHensel(factorization);
             RingPolynomial allGCDResult = new RingPolynomial { 0 };
 
@@ -45,18 +48,18 @@ namespace EEafp
             allGCDResult.Print();
 
             // после поднятия mod уже увеличился
-            var liftedDecomposition = RingPolynomial.HenselLifting(new ZPolynomial { 1, 2, 3 } * new ZPolynomial { 1, 1 } * new ZPolynomial { 0, 1 } * new ZPolynomial { 1, 0, 0, 0, 1 }, factorization, GCDfactor, 2);
+            var liftedDecomposition = RingPolynomial.HenselLifting(f, factorization, GCDfactor, 2);
             RingPolynomial checkLiftedDecomposition = new RingPolynomial { liftedDecomposition.polyCoefficient};
 
 
             for (int i=0; i < liftedDecomposition.CountUniq; i++)
             {
-                liftedDecomposition.UniqDecomposeElems[i].Print();
-                checkLiftedDecomposition *= liftedDecomposition.UniqDecomposeElems[i];
+                liftedDecomposition[i].Print();
+                checkLiftedDecomposition *= liftedDecomposition[i];
             }
             Program.Log("Проверяем декомпозицию поднятую:");
             checkLiftedDecomposition.Print('r');
-            new ZPolynomial(checkCoeffsPoly).Print();
+            f.Print();
 
             Console.Read(); 
         }
