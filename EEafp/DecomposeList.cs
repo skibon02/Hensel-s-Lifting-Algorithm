@@ -36,8 +36,11 @@ namespace EEafp
 
         public virtual void Add(RingPolynomial poly)
         {
-            polyCoef *= poly[poly.degree];
-            poly /= poly[poly.degree];
+            if (!poly.IsNull())
+            {
+                polyCoef *= poly[poly.degree];
+                poly /= poly[poly.degree];
+            }
 
             for (int i = 0; i < divisors.Count; i++)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace EEafp
 {
@@ -90,7 +91,7 @@ namespace EEafp
 
         static void Main(string[] args)
         {
-            RingPolynomial.SetModContext(11);
+            /*RingPolynomial.SetModContext(23);
 
             List<RingPolynomial> dividers;
             TestBerlekampFactor(new RingPolynomial { 1, 1, 1 });
@@ -99,20 +100,18 @@ namespace EEafp
             RingPolynomial test;
             do
             {
-                test = PrepareInputBerlekamp(out dividers, BerlekampMode.Medium);
+                test = PrepareInputBerlekamp(out dividers, BerlekampMode.Ultra);
 
             } while (TestBerlekampFactor(test));
 
-            Console.WriteLine("Test wrong!");
-            TestBerlekampFactor(test);
+            Console.WriteLine("Test wrong!"); */
+
+            while(IntPolynomialFactorisationTest());
 
             Console.Read();
         }
         static void LiftingTest()
         {
-
-            //RingPolynomial checkCoeffsPoly = new RingPolynomial { 1, 2, 3 } * new RingPolynomial { 1, 1 } * new RingPolynomial {0, 1 } * new RingPolynomial { 1, 0, 0, 0, 1 };
-            //RingPolynomial checkCoeffsPoly = new RingPolynomial { 1, 2, 3, 4, 2, 3, 5, 2, 1, 4, 5, 3, 6, 5 } * new RingPolynomial { 1, 2, 3 } * new RingPolynomial { 1, 2, 3 };
             RingPolynomial.SetModContext(5);
             IntPolynomial f = new IntPolynomial { -1, 2 } * new IntPolynomial { 1, 2 };
             RingPolynomial f_inring = new RingPolynomial(f);
@@ -136,6 +135,10 @@ namespace EEafp
                         Console.Write("(" + factorization[j] + ")*");
                     }
                 }
+                if (i != 0)
+                {
+                    factorsOfCoeff[i] *= factorization.polyCoef;
+                }
                 allGCDResult += factorsOfCoeff[i] * GCDfactor[i];
                 Console.Write("(" + GCDfactor[i] + ")\n");
             }
@@ -154,6 +157,119 @@ namespace EEafp
             Program.Log("Проверяем декомпозицию поднятую:");
             checkLiftedDecomposition.Print('r');
             f.Print();
+        }
+
+        static bool IntPolynomialFactorisationTest()
+        {
+            IntPolynomial f = prepareIntPolyForFactor("easy");
+            RingDecomposeList fFactorisation;
+            var LiftedFactorisation = f.FactorIntPolynomialOverBigModule(out fFactorisation);
+
+            RingPolynomial res = new RingPolynomial { 1 };
+            Program.Log("Получена факторизация:");
+            for (int i = 0; i < LiftedFactorisation.CountUniq; i++)
+            {
+                for (int j = 0; j < fFactorisation.divisors[i].count; j++)
+                {
+                    RingPolynomial currPoly;
+                    if (i == 0 && j == 0)
+                        currPoly = LiftedFactorisation[i] * LiftedFactorisation.polyCoef;
+                    else
+                        currPoly = LiftedFactorisation[i];
+
+                    currPoly.Print('g');
+                    res *= currPoly;
+                }
+            }
+
+            Program.Log("Проверка на соответствие исходному многочлену произведения:");
+            Program.recDepth++;
+            Program.Log("Исходный многочлен");
+            f.Print();
+            Program.Log("Результат перемножения факторизации:");
+            res.Print();
+            Program.recDepth--;
+
+            IntPolynomial resInt = new IntPolynomial(res);
+            if (f == resInt)
+            {
+                Program.Log("Верно!");
+                return true;
+            }
+            else
+            {
+                Program.Log("Неверно...");
+                return false;
+            }
+            return false;
+        }
+
+        static IntPolynomial prepareIntPolyForFactor(string mode)
+        {
+            int minCoef = 1;
+            int maxCoef = 1;
+            int minNumMult = 1;
+            int maxNumMult = 1;
+            int minSize = 1;
+            int maxSize = 1;
+            switch (mode) {
+                case "easy":
+                    minCoef = 1;
+                    maxCoef = 6;
+                    minNumMult = 3;
+                    maxNumMult = 3;
+                    minSize = 2;
+                    maxSize = 2;
+                    break;
+                case "medium":
+                    minCoef = 1;
+                    maxCoef = 10;
+                    minNumMult = 3;
+                    maxNumMult = 3;
+                    minSize = 3;
+                    maxSize = 3;
+                    break;
+                case "post-medium":
+                    minCoef = 1;
+                    maxCoef = 5;
+                    minNumMult = 4;
+                    maxNumMult = 5;
+                    minSize = 3;
+                    maxSize = 5;
+                    break;
+                case "hard":
+                    minCoef = 1;
+                    maxCoef = 5;
+                    minNumMult = 10;
+                    maxNumMult = 10;
+                    minSize = 2;
+                    maxSize = 5;
+                    break;
+                case "ultra":
+                    minCoef = 1;
+                    maxCoef = 5;
+                    minNumMult = 10;
+                    maxNumMult = 30;
+                    minSize = 2;
+                    maxSize = 15;
+                    break;
+            }
+            Random rnd = new Random();
+
+            IntPolynomial f = new IntPolynomial { rnd.Next(minCoef, maxCoef) };
+            int NumCoeffs = rnd.Next(minNumMult, maxNumMult);
+            for (int i=0; i < NumCoeffs; i++)
+            {
+                IntPolynomial temp = new IntPolynomial { rnd.Next(minCoef, maxCoef) };
+                int SizeCoeff = rnd.Next(minSize, maxSize);
+                for (int j=0; j < SizeCoeff; j++)
+                {
+                    temp[j] = (BigInteger)rnd.Next(minCoef, maxCoef);
+                }
+                f *= temp;
+            }
+
+            return f;
         }
 
         static void RingPolyTest()
