@@ -202,6 +202,28 @@ namespace EEafp
             return x;
         }
 
+        public static bool isNyamPrime(BigInteger nyam)
+        {
+           if (nyam > 1)
+            {
+                BigInteger i = 2;
+                while (i*i <= nyam)
+                {
+                    if (nyam % i == 0) return false;
+                    i++;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public static BigInteger getNextPrime(BigInteger currPrime)
+        {
+            BigInteger nextPrime = currPrime + 1;
+            while (!isNyamPrime(nextPrime)) nextPrime++;
+            return nextPrime;
+        }
+
         public BigInteger CoeffGCD()
         {
             BigInteger CurrGCD = this[0];
@@ -228,21 +250,91 @@ namespace EEafp
                 a = new IntPolynomial(g);
                 b = new IntPolynomial(f);
             }
+            BigInteger CoeffReminder;
             while (!b.IsNull())
             {
                 BigInteger CurrentMultiplyCoeff = BigInteger.Pow(b[b.size - 1], (a.size - 1) - (b.size - 1) + 1);
                 DividionResult divres = (a * CurrentMultiplyCoeff) / b;
                 a = b;
-                BigInteger CoeffReminder = divres.Item2.CoeffGCD();
+                CoeffReminder = divres.Item2.CoeffGCD();
                 b = divres.Item2 / CoeffReminder;
             }
-            gcd = a;
+            CoeffReminder = a.CoeffGCD();
+            gcd = a / CoeffReminder;
             if (gcd[gcd.size-1] < 0)
             {
                 gcd *= -1;
             }
             return new GCDResult(A.Item1, A.Item2);
         }
-    }
         #endregion
+
+        public static BigInteger SelectAppropriateMod(IntPolynomial f, IntPolynomial SquareFreef)
+        {
+            bool modApropriate = false;
+            BigInteger mod = 2;
+            while (!modApropriate)
+            {
+                while (f[f.degree] % mod == 0)
+                {
+                    mod = getNextPrime(mod);
+                }
+                RingPolynomial.SetModContext(mod);
+                RingPolynomial Ringf = new RingPolynomial(SquareFreef);
+                RingPolynomial gcdRes;
+                RingPolynomial.GCD(Ringf, Ringf.Derivative(), out gcdRes);
+                if (gcdRes.degree < 1 && ((Ringf / gcdRes).Quotient).FindNumOfMultipliers() > 0)
+                {
+                    modApropriate = true;
+                    break;
+                }
+                mod = getNextPrime(mod);
+            }
+            return mod;
+        }
+
+        public RingDecomposeList FactorIntPolynomialOverBigModule(out RingDecomposeList fFactorization)
+        {
+            IntPolynomial f = this;
+            IntPolynomial hasSquares;
+            IntPolynomial.GCD(f, f.Derivative(), out hasSquares);
+            IntPolynomial SquareFreef = (f / hasSquares).Quotient;
+
+            RingDecomposeList LiftedFactorisation;
+
+            if (SquareFreef.degree > 1)
+            {
+                BigInteger mod = SelectAppropriateMod(f, SquareFreef);
+                RingPolynomial.SetModContext(mod);
+                RingPolynomial fRing = new RingPolynomial(f);
+                fFactorization = fRing.BerlekampFactor();
+                List<RingPolynomial> GCDCoeffs = RingPolynomial.GetGCDCoefficientForHensel(fFactorization);
+
+                LiftedFactorisation = RingPolynomial.HenselLiftingUntilTheEnd(f, fFactorization, GCDCoeffs);
+            } else
+            {
+                RingPolynomial.SetModContext(5);
+                // f состоит из кратных множителей первой степени
+                LiftedFactorisation = new RingDecomposeList();
+                BigInteger coeff = SquareFreef.CoeffGCD();
+                IntPolynomial Multiplier = SquareFreef / coeff;
+
+                // находим наибольшее число в f, чтобы подобрать модуль
+                BigInteger biggestCoeff = f[0];
+                for (int i=0; i < f.size; i++)
+                {
+                    if (f[i] > biggestCoeff) 
+                        biggestCoeff = f[i];
+                }
+
+                BigInteger mod = getNextPrime(biggestCoeff);
+                RingPolynomial.SetModContext(mod);
+
+                for (int i = 0; i < f.size - 1; i++) LiftedFactorisation.Add(new RingPolynomial(Multiplier));
+                LiftedFactorisation.polyCoef *= (RingBint)coeff;
+                fFactorization = LiftedFactorisation;
+            }
+            return LiftedFactorisation;
+        }
+    }
 }
