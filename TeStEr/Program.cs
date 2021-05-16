@@ -151,9 +151,20 @@ namespace EEafp
 
             for (int i = 0; i < liftedDecomposition.CountUniq; i++)
             {
-                liftedDecomposition[i].Print();
-                checkLiftedDecomposition *= liftedDecomposition[i];
+                for(int j = 0; j < factorization.divisors[i].count; j++)
+                {
+                if (i == 0 && j == 0)
+                {
+                    (liftedDecomposition[i] * f[f.size - 1]).Print();
+                    checkLiftedDecomposition *= (liftedDecomposition[i] * f[f.size - 1]);
+                }
+                else
+                {
+                    liftedDecomposition[i].Print();
+                    checkLiftedDecomposition *= liftedDecomposition[i];
+                }
             }
+        }
             Program.Log("Проверяем декомпозицию поднятую:");
             checkLiftedDecomposition.Print('r');
             f.Print();
@@ -161,7 +172,7 @@ namespace EEafp
 
         static bool IntPolynomialFactorisationTest()
         {
-            IntPolynomial f = prepareIntPolyForFactor("easy");
+            IntPolynomial f = prepareIntPolyForFactor("hard");
             RingDecomposeList fFactorisation;
             var LiftedFactorisation = f.FactorIntPolynomialOverBigModule(out fFactorisation);
 

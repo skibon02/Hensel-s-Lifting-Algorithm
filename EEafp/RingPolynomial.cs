@@ -263,9 +263,8 @@ namespace EEafp
 
         protected override RingPolynomial PolyDiv(RingBint nyam)
         {
-            RingPolynomial p1 = this;
-            RingPolynomial res = new RingPolynomial(p1);
-            for (int i = 0; i < p1.size; i++)
+            RingPolynomial res = new RingPolynomial(this);
+            for (int i = 0; i < this.size; i++)
             {
                 res[i] /= nyam;
             }
@@ -682,54 +681,8 @@ namespace EEafp
             IntPolynomial hasSquares;
             IntPolynomial.GCD(f, f.Derivative(), out hasSquares);
             IntPolynomial SquareFreef = (f / hasSquares).Quotient;
-            BigInteger p = RingBint.mod;
-
-            BigInteger OriginalCoeff = f[f.size - 1];
-            List<RingPolynomial> LiftingRes = new List<RingPolynomial>();
-            for (int i = 0; i < fFactorization.CountUniq; i++)
-            {
-                LiftingRes.Add(fFactorization[i]);
-            }
-            LiftingRes[0] *= OriginalCoeff;
-
-            for (int t = 1; t < liftingDegree; t++)
-            {
-                IntPolynomial multiplyFactor = new IntPolynomial { 1 };
-                LiftingRes[0] *= OriginalCoeff;
-                for (int i = 0; i < LiftingRes.Count; i++)
-                {
-                    multiplyFactor *= new IntPolynomial(LiftingRes[i]);
-                }
-
-                var temp = SquareFreef - multiplyFactor;
-                RingPolynomial d = new RingPolynomial(temp / BigInteger.Pow(p, t));
-
-
-                for (int i = 0; i < fFactorization.CountUniq; i++)
-                {
-                    RingPolynomial CurrUniqPoly = new RingPolynomial(fFactorization[i]);
-                    if (i == 0) CurrUniqPoly *= OriginalCoeff;
-                    RingPolynomial Gc = (d * GCDCoeffs[i] / CurrUniqPoly).Reminder;
-                    SetModContext(BigInteger.Pow(p, t + 1));
-                    LiftingRes[i] = LiftingRes[i] + Gc * BigInteger.Pow(p, t);
-                    if (i == 0) LiftingRes[i] /= OriginalCoeff;
-                    SetModContext(p);
-                }
-
-            }
-            SetModContext(BigInteger.Pow(p, liftingDegree));
-            RingDecomposeList res = new RingDecomposeList();
-            res.AddRange(LiftingRes);
-            res.polyCoef = OriginalCoeff;
-            return res;
-        }
-
-        public static RingDecomposeList HenselLiftingUntilTheEnd(IntPolynomial f, RingDecomposeList fFactorization, List<RingPolynomial> GCDCoeffs)
-        {
-            IntPolynomial hasSquares;
-            IntPolynomial.GCD(f, f.Derivative(), out hasSquares);
-            IntPolynomial SquareFreef = (f / hasSquares).Quotient;
             BigInteger squareCoeff = hasSquares[hasSquares.size - 1];
+            SquareFreef *= squareCoeff;
 
             BigInteger p = RingBint.mod;
 
@@ -739,7 +692,60 @@ namespace EEafp
             {
                 LiftingList.Add(new IntPolynomial(fFactorization[i]));
             }
+            LiftingList[0] *= OriginalCoeff;
 
+            for (int t = 1; t < liftingDegree; t++)
+            {
+                IntPolynomial multiplyFactor = new IntPolynomial { 1 };
+                for (int i = 0; i < LiftingList.Count; i++)
+                {
+                    multiplyFactor *= new IntPolynomial(LiftingList[i]);
+                }
+
+                var temp = SquareFreef - multiplyFactor;
+                RingPolynomial d = new RingPolynomial(temp / BigInteger.Pow(p, t));
+
+
+                for (int i = 0; i < fFactorization.CountUniq; i++)
+                {
+                    RingPolynomial CurrUniqPoly = fFactorization[i];
+                    if (i == 0) CurrUniqPoly *= fFactorization.polyCoef;
+                    RingPolynomial Gc = (d * GCDCoeffs[i] / CurrUniqPoly).Reminder;
+                    SetModContext(BigInteger.Pow(p, t + 1));
+                    LiftingList[i] = LiftingList[i] + new IntPolynomial(Gc) * BigInteger.Pow(p, t);
+                    SetModContext(p);
+                }
+
+            }
+            SetModContext(BigInteger.Pow(p, liftingDegree));
+            RingDecomposeList liftigRes = new RingDecomposeList();
+            for (int i = 0; i < LiftingList.Count; i++) liftigRes.Add(new RingPolynomial(LiftingList[i]));
+            liftigRes.polyCoef = OriginalCoeff;
+            return liftigRes;
+        }
+
+        public static RingDecomposeList HenselLiftingUntilTheEnd(IntPolynomial f, RingDecomposeList fFactorization, List<RingPolynomial> GCDCoeffs)
+        {
+            IntPolynomial hasSquares;
+            IntPolynomial.GCD(f, f.Derivative(), out hasSquares);
+            IntPolynomial SquareFreef = (f / hasSquares).Quotient;
+            BigInteger squareCoeff = hasSquares[hasSquares.size - 1];
+            SquareFreef *= squareCoeff;
+
+            BigInteger p = RingBint.mod;
+
+            BigInteger OriginalCoeff = f[f.size - 1];
+            BigInteger biggestCoeff = SquareFreef[0];
+            for (int i=1; i < SquareFreef.size; i++)
+            {
+                if (SquareFreef[i] > biggestCoeff) biggestCoeff = SquareFreef[i];
+            }
+            List<IntPolynomial> LiftingList = new List<IntPolynomial>();
+            for (int i = 0; i < fFactorization.CountUniq; i++)
+            {
+                LiftingList.Add(new IntPolynomial(fFactorization[i]));
+            }
+            LiftingList[0] *= OriginalCoeff;
             bool Decomposed = false;
 
             int t = 1;
@@ -748,10 +754,9 @@ namespace EEafp
             {
                 currMod = BigInteger.Pow(p, t + 1);
                 IntPolynomial multiplyFactor = new IntPolynomial { 1 };
-                LiftingList[0] *= OriginalCoeff;
                 for (int i = 0; i < LiftingList.Count; i++)
                 {
-                    multiplyFactor *= new IntPolynomial(LiftingList[i]);
+                    multiplyFactor *= LiftingList[i];
                 }
 
                 var temp = SquareFreef - multiplyFactor;
@@ -765,25 +770,28 @@ namespace EEafp
                     RingPolynomial Gc = ((d * GCDCoeffs[i]) / CurrUniqPoly).Reminder;
                     SetModContext(currMod);
                     LiftingList[i] = LiftingList[i] + new IntPolynomial(Gc) * BigInteger.Pow(p, t);
-                    if (i == 0)
-                    {
-                        LiftingList[i] = new IntPolynomial(new RingPolynomial(LiftingList[i]) / OriginalCoeff);
-                    }
                     SetModContext(p);
                 }
                 t++;
-                if (currMod > f[f.degree])
+                Program.Log("Разложение поднято до " + currMod);
+                if (currMod > biggestCoeff)
                 {
                     SetModContext(currMod);
                     RingPolynomial res = new RingPolynomial { 1 };
+                    RingPolynomial FirstWithoutCoeff = new RingPolynomial(LiftingList[0]) / LiftingList[0][LiftingList[0].degree];
                     for (int u=0; u < fFactorization.CountUniq; u++)
                     {
                         for (int j = 0; j < fFactorization.divisors[u].count; j++)
                         {
-                            res *= new RingPolynomial(LiftingList[u]);
+                            if (j != 0 && u == 0)
+                            {
+                                res *= FirstWithoutCoeff;
+                            } else
+                            {
+                                res *= new RingPolynomial(LiftingList[u]);
+                            }
                         }
                     }
-                    res *= OriginalCoeff* squareCoeff;
                     IntPolynomial resInt = new IntPolynomial(res);
                     if (f == resInt)
                     {
@@ -795,7 +803,7 @@ namespace EEafp
             SetModContext(currMod);
             RingDecomposeList liftigRes = new RingDecomposeList();
             for (int i = 0; i < LiftingList.Count; i++) liftigRes.Add(new RingPolynomial(LiftingList[i]));
-            liftigRes.polyCoef = OriginalCoeff * squareCoeff;
+            liftigRes.polyCoef = OriginalCoeff;
             return liftigRes;
         }
     }

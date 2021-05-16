@@ -12,7 +12,69 @@ namespace EEafp
         static void Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.White;
-            IntPolynomial f = new IntPolynomial { 3, 2, 59, 3, 23, 4, 1 };
+            IntPolynomial f = new IntPolynomial { 1, 2 } * new IntPolynomial { 1, 4 } * new IntPolynomial { 1,4} * new IntPolynomial { 1, 5 } * new IntPolynomial { 1,3, 4, 2,3,4 ,6 };
+
+            IntPolynomial hasSquares;
+            IntPolynomial.GCD(f, f.Derivative(), out hasSquares);
+            IntPolynomial SquareFreef = (f / hasSquares).Quotient;
+
+            RingPolynomial.SetModContext(IntPolynomial.SelectAppropriateMod(f, SquareFreef));
+
+            RingPolynomial f_inring = new RingPolynomial(f);
+            f_inring.Print();
+            var factorization = f_inring.BerlekampFactor();
+            var GCDfactor = RingPolynomial.GetGCDCoefficientForHensel(factorization);
+            RingPolynomial allGCDResult = new RingPolynomial { 0 };
+
+            List<RingPolynomial> factorsOfCoeff = new List<RingPolynomial>();
+            for (int i = 0; i < factorization.CountUniq; i++)
+            {
+                factorsOfCoeff.Add(new RingPolynomial { 1 });
+            }
+            for (int i = 0; i < factorization.CountUniq; i++)
+            {
+                for (int j = 0; j < factorization.CountUniq; j++)
+                {
+                    if (i != j)
+                    {
+                        factorsOfCoeff[i] *= factorization[j];
+                        Console.Write("(" + factorization[j] + ")*");
+                    }
+                }
+                if (i != 0)
+                {
+                    factorsOfCoeff[i] *= factorization.polyCoef;
+                }
+                allGCDResult += factorsOfCoeff[i] * GCDfactor[i];
+                Console.Write("(" + GCDfactor[i] + ")\n");
+            }
+            allGCDResult.Print();
+
+            // после поднятия mod уже увеличился
+            var liftedDecomposition = RingPolynomial.HenselLifting(f, factorization, GCDfactor, 4);
+            RingPolynomial checkLiftedDecomposition = new RingPolynomial { 1 };
+
+
+            for (int i = 0; i < liftedDecomposition.CountUniq; i++)
+            {
+                for (int j = 0; j < factorization.divisors[i].count; j++)
+                {
+                    if (i == 0 && j == 0)
+                    {
+                        (liftedDecomposition[i] * f[f.size - 1]).Print();
+                        checkLiftedDecomposition *= (liftedDecomposition[i] * f[f.size - 1]);
+                    } else
+                    {
+                        liftedDecomposition[i].Print();
+                        checkLiftedDecomposition *= liftedDecomposition[i];
+                    }
+                }
+            }
+            Program.Log("Проверяем декомпозицию поднятую:");
+            checkLiftedDecomposition.Print('r');
+            f.Print();  
+
+            /*IntPolynomial f = new IntPolynomial { 1, 2 } * new IntPolynomial { 1, 5 } * new IntPolynomial { 1, 5 };
             RingDecomposeList fFactorisation;
             var LiftedFactorisation = f.FactorIntPolynomialOverBigModule(out fFactorisation);
 
@@ -49,7 +111,7 @@ namespace EEafp
             else
             {
                 Program.Log("Неверно...");
-            }
+            } */
 
             Console.Read(); 
         }
