@@ -39,7 +39,8 @@ namespace EEafp
             if (!poly.IsNull())
             {
                 polyCoef *= poly[poly.degree];
-                poly /= poly[poly.degree];
+                if (poly[poly.degree] != 1)
+                    poly /= poly[poly.degree];
             }
 
             for (int i = 0; i < divisors.Count; i++)

@@ -311,6 +311,7 @@ namespace EEafp
                 List<RingPolynomial> GCDCoeffs = RingPolynomial.GetGCDCoefficientForHensel(fFactorization);
 
                 LiftedFactorisation = RingPolynomial.HenselLiftingUntilTheEnd(f, fFactorization, GCDCoeffs);
+                LiftedFactorisation.polyCoef = f[f.size - 1];
             } else
             {
                 RingPolynomial.SetModContext(5);
