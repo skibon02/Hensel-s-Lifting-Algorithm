@@ -271,9 +271,8 @@ namespace EEafp
 
         public static BigInteger SelectAppropriateMod(IntPolynomial f, IntPolynomial SquareFreef)
         {
-            bool modApropriate = false;
             BigInteger mod = 2;
-            while (!modApropriate)
+            while (true)
             {
                 while (f[f.degree] % mod == 0)
                 {
@@ -281,13 +280,10 @@ namespace EEafp
                 }
                 RingPolynomial.SetModContext(mod);
                 RingPolynomial Ringf = new RingPolynomial(SquareFreef);
-                RingPolynomial gcdRes;
-                RingPolynomial.GCD(Ringf, Ringf.Derivative(), out gcdRes);
+                RingPolynomial.GCD(Ringf, Ringf.Derivative(), out RingPolynomial gcdRes);
                 if (gcdRes.degree < 1 && ((Ringf / gcdRes).Quotient).FindNumOfMultipliers() > 0)
-                {
-                    modApropriate = true;
                     break;
-                }
+
                 mod = getNextPrime(mod);
             }
             return mod;

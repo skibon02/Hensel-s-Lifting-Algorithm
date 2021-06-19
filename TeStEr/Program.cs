@@ -91,22 +91,23 @@ namespace EEafp
 
         static void Main(string[] args)
         {
-            /*RingPolynomial.SetModContext(23);
+            //RingPolynomial.SetModContext(17);
 
-            List<RingPolynomial> dividers;
-            TestBerlekampFactor(new RingPolynomial { 1, 1, 1 });
-            Program.LogEnabled = true;
+            //RingPolynomial test = new RingPolynomial { 1, 1 } * new RingPolynomial { 2, 2 } * new RingPolynomial { 0, 1 };
+            //TestBerlekampFactor(test);
 
-            RingPolynomial test;
-            do
-            {
-                test = PrepareInputBerlekamp(out dividers, BerlekampMode.Ultra);
+            //List<RingPolynomial> dividers;
 
-            } while (TestBerlekampFactor(test));
+            //do
+            //{
+            //    test = PrepareInputBerlekamp(out dividers, BerlekampMode.Ultra);
 
-            Console.WriteLine("Test wrong!"); */
+            //} while (TestBerlekampFactor(test));
 
-            while(IntPolynomialFactorisationTest());
+            //Console.WriteLine("Test wrong!");
+            //TestBerlekampFactor(test);
+
+            while (IntPolynomialFactorisationTest());
 
             Console.Read();
         }
@@ -177,6 +178,7 @@ namespace EEafp
             var LiftedFactorisation = f.FactorIntPolynomialOverBigModule(out fFactorisation);
 
             RingPolynomial res = new RingPolynomial { 1 };
+            Program.Log();
             Program.Log("Получена факторизация:");
             for (int i = 0; i < LiftedFactorisation.CountUniq; i++)
             {
@@ -192,6 +194,7 @@ namespace EEafp
                     res *= currPoly;
                 }
             }
+            Program.Log();
 
             Program.Log("Проверка на соответствие исходному многочлену произведения:");
             Program.recDepth++;
@@ -212,7 +215,6 @@ namespace EEafp
                 Program.Log("Неверно...");
                 return false;
             }
-            return false;
         }
 
         static IntPolynomial prepareIntPolyForFactor(string mode)

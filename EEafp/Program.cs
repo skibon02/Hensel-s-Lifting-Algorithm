@@ -120,7 +120,7 @@ namespace EEafp
         public static string GetTab {
             get {
                 string res = "";
-                for (int i = 0; i < (recDepth-1)*3; i++)
+                for (int i = 0; i < (recDepth)*3; i++)
                 {
                     res += "* ";
                 }
