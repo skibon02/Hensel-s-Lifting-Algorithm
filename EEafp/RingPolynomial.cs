@@ -778,13 +778,14 @@ namespace EEafp
                     RingPolynomial CurrUniqPoly = fFactorization[i];
                     if (i == 0) CurrUniqPoly *= fFactorization.polyCoef;
                     RingPolynomial Gc = (d * GCDCoeffs[i] / CurrUniqPoly).Reminder;
-                    SetModContext(BigInteger.Pow(p, t + 1));
+                    SetModContext(p, t + 1);
                     LiftingList[i] = LiftingList[i] + new IntPolynomial(Gc) * BigInteger.Pow(p, t);
                     SetModContext(p);
                 }
+                Program.Log("Разложение поднято до " + BigInteger.Pow(p, t + 1));
 
             }
-            SetModContext(BigInteger.Pow(p, liftingDegree));
+            SetModContext(p, liftingDegree);
             RingDecomposeList liftigRes = new RingDecomposeList();
             for (int i = 0; i < LiftingList.Count; i++) liftigRes.Add(new RingPolynomial(LiftingList[i]));
             liftigRes.polyCoef = OriginalCoeff;
@@ -835,7 +836,7 @@ namespace EEafp
                     RingPolynomial CurrUniqPoly = new RingPolynomial(fFactorization[i]);
                     if (i == 0) CurrUniqPoly *= fFactorization.polyCoef;
                     RingPolynomial Gc = ((d * GCDCoeffs[i]) / CurrUniqPoly).Reminder;
-                    SetModContext(currMod);
+                    SetModContext(p, t + 1);
                     LiftingList[i] = LiftingList[i] + new IntPolynomial(Gc) * BigInteger.Pow(p, t);
                     SetModContext(p);
                 }
@@ -843,7 +844,7 @@ namespace EEafp
                 Program.Log("Разложение поднято до " + currMod);
                 if (currMod > biggestCoeff)
                 {
-                    SetModContext(currMod);
+                    SetModContext(p, t);
                     RingPolynomial res = new RingPolynomial { 1 };
                     RingPolynomial FirstWithoutCoeff = new RingPolynomial(LiftingList[0]) / LiftingList[0][LiftingList[0].degree];
                     for (int u=0; u < fFactorization.CountUniq; u++)
@@ -867,7 +868,7 @@ namespace EEafp
                 }
             }
 
-            SetModContext(currMod);
+            SetModContext(p, t);
             RingDecomposeList liftigRes = new RingDecomposeList();
             for (int i = 0; i < LiftingList.Count; i++) liftigRes.Add(new RingPolynomial(LiftingList[i]));
             liftigRes.polyCoef = OriginalCoeff;

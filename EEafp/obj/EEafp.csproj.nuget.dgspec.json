@@ -1,23 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "E:\\programming\\С#\\Hensel's lifting algorithm\\EEafp\\EEafp.csproj": {}
+    "C:\\Users\\Vitas\\Hensel-s-Lifting-Algorithm\\EEafp\\EEafp.csproj": {}
   },
   "projects": {
-    "E:\\programming\\С#\\Hensel's lifting algorithm\\EEafp\\EEafp.csproj": {
+    "C:\\Users\\Vitas\\Hensel-s-Lifting-Algorithm\\EEafp\\EEafp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\programming\\С#\\Hensel's lifting algorithm\\EEafp\\EEafp.csproj",
+        "projectUniqueName": "C:\\Users\\Vitas\\Hensel-s-Lifting-Algorithm\\EEafp\\EEafp.csproj",
         "projectName": "EEafp",
-        "projectPath": "E:\\programming\\С#\\Hensel's lifting algorithm\\EEafp\\EEafp.csproj",
-        "packagesPath": "E:\\programming\\С#\\packages\\.nuget",
-        "outputPath": "E:\\programming\\С#\\Hensel's lifting algorithm\\EEafp\\obj\\",
+        "projectPath": "C:\\Users\\Vitas\\Hensel-s-Lifting-Algorithm\\EEafp\\EEafp.csproj",
+        "packagesPath": "C:\\Users\\Vitas\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Vitas\\Hensel-s-Lifting-Algorithm\\EEafp\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\skiba\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Vitas\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -57,7 +54,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.103\\RuntimeIdentifierGraph.json"
         }
       }
     }

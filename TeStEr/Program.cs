@@ -107,16 +107,24 @@ namespace EEafp
             //Console.WriteLine("Test wrong!");
             //TestBerlekampFactor(test);
 
-            while (IntPolynomialFactorisationTest());
+            //LiftingTest();
+
+            while (IntPolynomialFactorisationTest("hard"));
 
             Console.Read();
         }
         static void LiftingTest()
         {
-            RingPolynomial.SetModContext(5);
-            IntPolynomial f = new IntPolynomial { -1, 2 } * new IntPolynomial { 1, 2 };
+            IntPolynomial f = new IntPolynomial { 1, 2, 3 } * new IntPolynomial { 1, 2 };
+
+            IntPolynomial squares;
+            IntPolynomial.GCD(f, f.Derivative(), out squares);
+            IntPolynomial SquareFreef = (f / squares).Quotient;
+            BigInteger mod = IntPolynomial.SelectAppropriateMod(f, SquareFreef);
+            RingPolynomial.SetModContext(mod);
+            Console.WriteLine("Выбранный модуль кольца: " + mod + "\n");
+
             RingPolynomial f_inring = new RingPolynomial(f);
-            f_inring.Print();
             var factorization = f_inring.BerlekampFactor();
             var GCDfactor = RingPolynomial.GetGCDCoefficientForHensel(factorization);
             RingPolynomial allGCDResult = new RingPolynomial { 0 };
@@ -146,7 +154,8 @@ namespace EEafp
             allGCDResult.Print();
 
             // после поднятия mod уже увеличился
-            var liftedDecomposition = RingPolynomial.HenselLifting(f, factorization, GCDfactor, 2);
+            var liftedDecomposition = RingPolynomial.HenselLifting(f, factorization, GCDfactor, 20);
+
             RingPolynomial checkLiftedDecomposition = new RingPolynomial { 1 };
 
 
@@ -171,9 +180,9 @@ namespace EEafp
             f.Print();
         }
 
-        static bool IntPolynomialFactorisationTest()
+        static bool IntPolynomialFactorisationTest(string mode = "easy")
         {
-            IntPolynomial f = prepareIntPolyForFactor("hard");
+            IntPolynomial f = prepareIntPolyForFactor(mode);
             RingDecomposeList fFactorisation;
             var LiftedFactorisation = f.FactorIntPolynomialOverBigModule(out fFactorisation);
 
