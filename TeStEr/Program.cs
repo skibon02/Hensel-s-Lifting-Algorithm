@@ -58,7 +58,7 @@ namespace EEafp
             switch (berlekampMode)
             {
                 case BerlekampMode.Easy:
-                    return PrepareInputBerlekamp(out dividers, 3,3,2,2,false );
+                    return PrepareInputBerlekamp(out dividers, 3, 3, 2, 2, false );
                 case BerlekampMode.PostMedium:
                     return PrepareInputBerlekamp(out dividers, 3, 3, 3, 3, true);
                 case BerlekampMode.Medium:
